@@ -249,7 +249,7 @@ class Crypto
             if (time() >= $timestamp && time() <= $macExpire)
             {
                 $dataString = (string) substr($liveData, 32);
-                $macKey = $this->_setupKey(array($timestamp, $macExpire, $randomBytes, $this->_macKey), false);
+                $macKey = $this->_setupKey(array($timestamp, $macExpire, $randomBytes, $this->_macKey));
                 $mac = $this->_hmac($dataString, $macKey);
                 
                 // "Constant time" string comparison to prevent timing attacks.
