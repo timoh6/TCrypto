@@ -5,81 +5,81 @@ use TCrypto\StorageHandler\StorageInterface,
     TCrypto\CryptoHandler\CryptoInterface;
 
 /**
- * The main workhorse.
- * 
- * @author timoh <timoh6@gmail.com>
- * @license Public Domain
- */
+* The main workhorse.
+*
+* @author timoh <timoh6@gmail.com>
+* @license Public Domain
+*/
 class Crypto
 {
     /**
-     * The MAC key. Must be at least 40 bytes.
-     * 
-     * @var string 
-     */
+* The MAC key. Must be at least 40 bytes.
+*
+* @var string
+*/
     protected $_macKey = '';
     
     /**
-     * The Encryption key. Must be at least 40 bytes if data encryption
-     * will be used. Otherwise empty.
-     * 
-     * @var string
-     */
+* The Encryption key. Must be at least 40 bytes if data encryption
+* will be used. Otherwise empty.
+*
+* @var string
+*/
     protected $_cipherKey = '';
     
     /**
-     * Maximum lifetime of the data (in seconds).
-     * "Lifetime" means the maximum allowed time between
-     * save() and _extractData() calls.
-     * 
-     * @var int
-     */
+* Maximum lifetime of the data (in seconds).
+* "Lifetime" means the maximum allowed time between
+* save() and _extractData() calls.
+*
+* @var int
+*/
     protected $_macMaxLifetime = 3600;
     
     /**
-     * @var TCrypto\StorageHandler\StorageInterface 
-     */
+* @var TCrypto\StorageHandler\StorageInterface
+*/
     protected $_storageHandler = null;
     
     /**
-     * @var TCrypto\CryptoHandler\CryptoInterface 
-     */
+* @var TCrypto\CryptoHandler\CryptoInterface
+*/
     protected $_cryptoHandler = null;
     
     /**
-     * @var TCrypto\pluginContainer 
-     */
+* @var TCrypto\pluginContainer
+*/
     protected $_pluginContainer = null;
     
     /**
-     * The data as key-value pairs.
-     * 
-     * @var array 
-     */
+* The data as key-value pairs.
+*
+* @var array
+*/
     protected $_data = array();
     
     /**
-     * Extra "entropy sources" to mix the MAC / encryption keys.
-     * For example array($_SERVER['REMOTE_ADDR']) etc.
-     * 
-     * @var array 
-     */
+* Extra "entropy sources" to mix the MAC / encryption keys.
+* For example array($_SERVER['REMOTE_ADDR']) etc.
+*
+* @var array
+*/
     protected $_entropyPool = array();
     
     /**
-    * Whether to call save() automatically after setValue() or not.
-    *
-    * @var bool
-    */
+* Whether to call save() automatically after setValue() or not.
+*
+* @var bool
+*/
     protected $_saveOnSet = false;
     
     /**
-    *
-    * @param TCrypto\StorageHandler\StorageInterface $storage
-    * @param TCrypto\CryptoHandler\CryptoInterface $crypto
-    * @param TCrypto\PluginContainer $plugins
-    * @param array $options
-    */
+*
+* @param TCrypto\StorageHandler\StorageInterface $storage
+* @param TCrypto\CryptoHandler\CryptoInterface $crypto
+* @param TCrypto\PluginContainer $plugins
+* @param array $options
+*/
     public function __construct(StorageInterface $storage,
                                 PluginContainer $plugins,
                                 CryptoInterface $crypto = null,
@@ -103,12 +103,12 @@ class Crypto
     }
 
     /**
-     * Set a key-value pair to be stored. If $_saveOnSet is true,
-     * the data will be immediately saved to the storage.
-     * 
-     * @param string $key
-     * @param mixed $data
-     */
+* Set a key-value pair to be stored. If $_saveOnSet is true,
+* the data will be immediately saved to the storage.
+*
+* @param string $key
+* @param mixed $data
+*/
     public function setValue($key, $data = null)
     {
         $this->_data[$key] = $data;
@@ -120,18 +120,18 @@ class Crypto
     }
 
     /**
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
-     */
+* @param string $key
+* @param mixed $default
+* @return mixed
+*/
     public function getValue($key, $default = null)
     {
         return array_key_exists($key, $this->_data) ? $this->_data[$key] : $default;
     }
 
     /**
-     * @return boolean
-     */
+* @return boolean
+*/
     public function removeValue($key)
     {
         if (array_key_exists($key, $this->_data))
@@ -145,11 +145,11 @@ class Crypto
     }
 
     /**
-     * Saves the data to a storage.
-     * 
-     * @thows TCrypto\Exception
-     * @return boolean
-     */
+* Saves the data to a storage.
+*
+* @thows TCrypto\Exception
+* @return boolean
+*/
     public function save()
     {
         if (count($this->_data) > 0)
@@ -220,8 +220,8 @@ class Crypto
     }
 
     /**
-     * Destroys the data both from memory and storage.
-     */
+* Destroys the data both from memory and storage.
+*/
     public function destroy()
     {
         $this->_data = array();
@@ -230,8 +230,8 @@ class Crypto
     }
 
     /**
-     * Extracts the data from storage.
-     */
+* Extracts the data from storage.
+*/
     protected function _extractData()
     {
         $liveData = $this->_storageHandler->fetch();
@@ -249,7 +249,7 @@ class Crypto
             if (time() >= $timestamp && time() <= $macExpire)
             {
                 $dataString = (string) substr($liveData, 32);
-                $macKey = $this->_setupKey(array($timestamp, $macExpire, $randomBytes, $this->_macKey), false);
+                $macKey = $this->_setupKey(array($timestamp, $macExpire, $randomBytes, $this->_macKey));
                 $mac = $this->_hmac($dataString, $macKey);
                 
                 // "Constant time" string comparison to prevent timing attacks.
@@ -305,12 +305,12 @@ class Crypto
     }
     
     /**
-     * Constructs a key string for MAC/encryption
-     * 
-     * @param array $fields
-     * @return string
-     * @thows TCrypto\Exception
-     */
+* Constructs a key string for MAC/encryption
+*
+* @param array $fields
+* @return string
+* @thows TCrypto\Exception
+*/
     protected function _setupKey(array $fields = array())
     {
         $key = '';
@@ -335,9 +335,9 @@ class Crypto
     }
     
     /**
-     *
-     * @param array $options
-     */
+*
+* @param array $options
+*/
     protected function _setOptions(array $options = array())
     {
         if (isset($options['mac_key']))
@@ -366,11 +366,11 @@ class Crypto
     }
     
     /**
-     *
-     * @param string $data
-     * @param int $len
-     * @return string 
-     */
+*
+* @param string $data
+* @param int $len
+* @return string
+*/
     protected function _hash($data, $len = 32)
     {
         $len = (int) $len;
@@ -389,23 +389,23 @@ class Crypto
     }
     
     /**
-     *
-     * @param string $data
-     * @param string $key
-     * @return string 
-     */
+*
+* @param string $data
+* @param string $key
+* @return string
+*/
     protected function _hmac($data, $key)
     {
         return hash_hmac('sha256', $data, $key, true);
     }
     
     /**
-     * http://code.google.com/p/oauth/
-     * 
-     * @param string $stringA
-     * @param string $stringB
-     * @return boolean
-     */
+* http://code.google.com/p/oauth/
+*
+* @param string $stringA
+* @param string $stringB
+* @return boolean
+*/
     public static function compareString($stringA, $stringB)
     {
         $stringA = (string) $stringA;
@@ -433,11 +433,11 @@ class Crypto
     }
 
     /**
-     * Generate a random string of bytes.
-     * 
-     * @param int $count
-     * @return string
-     */
+* Generate a random string of bytes.
+*
+* @param int $count
+* @return string
+*/
     public static function getRandomBytes($count)
     {
         $count = (int) $count;
@@ -456,6 +456,7 @@ class Crypto
             if ($tmp !== false)
             {
                 $bytes = $tmp;
+                $hasBytes = true;
             }
         }
 
