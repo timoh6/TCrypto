@@ -30,8 +30,7 @@ class McryptAes256Cbc implements CryptoInterface
      */
     public function encrypt($data, $iv, $key)
     {
-        // Max. 2^32 lohkoa samalla avaimella (ei väliä onko
-        // yhdessä pötkössä vai erillään pienemmisä osissa).
+        // Max. 2^32 blocks with a same key (not realistic in a web application).
         if (mcrypt_generic_init($this->_td, $key, $iv) !== 0)
         {
             return false;
@@ -60,8 +59,7 @@ class McryptAes256Cbc implements CryptoInterface
         }
 
         $plainText = mdecrypt_generic($this->_td, $data);
-        
-        // Stripataan mahdollinen padding pois.
+
         $plainText = rtrim($plainText, "\0");
         
         mcrypt_generic_deinit($this->_td);
