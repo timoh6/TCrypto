@@ -1,7 +1,7 @@
 TCrypto
 =======
 
-TCrypto is a simple PHP 5.3+ key-value storage framework for use in storing
+TCrypto is a simple PHP 5.3+ key-value storage library for use in storing
 data securely to a "storage backend". By default, a cookie will be used as a storage backend.
 
 TCrypto can be used as a scalable "session handler", especially scalable,
