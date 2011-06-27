@@ -2,10 +2,10 @@ TCrypto
 =======
 
 TCrypto is a simple PHP 5.3+ key-value storage framework for use in storing
-data securely to a "storage backend". By default, a cookie will be used.
+data securely to a "storage backend". By default, a cookie will be used as a storage backend.
 
 TCrypto can be used as a scalable "session handler", especially scalable,
-if cookies are used as a storage. This is a bit like Ruby on Rails sessions.
+if cookies are used as a storage backend. This is a bit like Ruby on Rails sessions.
 
 TCrypto takes care of checking data integrity, encryption and
 storing/retrieving data from the selected storage implementation.
@@ -73,10 +73,13 @@ First:  before saving the data to a storage.
 Second: after extracting the data from a storage (in reverse order).
 
 This creates the needed serialize/unserialize plugin.
+
     $plugins = new TCrypto\PluginContainer();
 
 You can also attach more plugins.
+
     $plugins->attach(new TCrypto\Plugin\CompressPlugin());
+
 Now the data will be first serialized and then compressed (when saving).
 When extracting the data from a storage, the data will be first uncompressed
 and then unserialized.
