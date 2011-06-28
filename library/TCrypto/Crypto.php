@@ -197,9 +197,9 @@ class Crypto
 
             // "Compress" $timestamp and $macExpire to save some space.
             $dataString = base_convert($timestamp, 10, 36) .
-                    base_convert($macExpire, 10, 36) .
-                    $randomBytes .
-                    $data;
+                          base_convert($macExpire, 10, 36) .
+                          $randomBytes .
+                          $data;
 
             try
             {
