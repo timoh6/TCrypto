@@ -14,6 +14,7 @@ This is a preview release.
 
 TCrypto is placed in the public domain.
 
+
 Examples
 --------
 
@@ -63,6 +64,36 @@ Examples
     // Destroys the data both from memory and storage.
     $tc->destroy();
 
+
+About symmetric encryption
+--------------------------
+
+Currently there are two choices for an encryption provider:
+
+    Crypto\CryptoHandler\McryptAes128Cbc
+
+and
+
+    Crypto\CryptoHandler\McryptAes256Cbc
+
+McryptAes128Cbc and McryptAes256Cbc both implememt AES in CBC mode using a random
+initializing vector. Only the key size differs between them. 128-bit key size
+should be unbreakable with foreseeable technology. But on the other hand,
+256-bit keys provides more margin of security (against side channels etc.).
+Encrypting with 128-bit keys should be somewhat faster than encrypting with
+256-bit keys. However, in a typical web application usage scenario, this speed
+difference is probably insignificant.
+
+If you feel paranoid (the bigger, the better fetish), use McryptAes256Cbc.
+Otherwise use McryptAes128Cbc.
+
+TCrypto derives encryption keys from variable data (timestamps, initializing
+vector, $_cipherKey and user supplied extra entropy sources). This quarantees
+that a fresh and random key will be used for each encryption operation. Which
+means (currently known) related-key attacks does not apply against AES-256
+(McryptAes256Cbc).
+
+
 Plugins
 -------
 
@@ -70,13 +101,14 @@ TCrypto comes with a simple "plugin system". Plugins are run in two separate
 places.
 
 First:  before saving the data to a storage.
+
 Second: after extracting the data from a storage (in reverse order).
 
-This creates the needed serialize/unserialize plugin.
+This creates the needed serialize/unserialize plugin:
 
     $plugins = new TCrypto\PluginContainer();
 
-You can also attach more plugins.
+You can also attach more plugins:
 
     $plugins->attach(new TCrypto\Plugin\CompressPlugin());
 
@@ -85,6 +117,7 @@ When extracting the data from a storage, the data will be first uncompressed
 and then unserialized.
 
 SECURITY NOTE:
+
 When extracting the data from a storage, a HMAC value will be checked BEFORE
 the plugins are run. This could potentially lead to bugs or security issues.
 If you use any extra plugins, make sure they operate correctly.
