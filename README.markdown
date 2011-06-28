@@ -104,7 +104,7 @@ First:  before saving the data to a storage.
 
 Second: after extracting the data from a storage (in reverse order).
 
-This creates the needed serialize/unserialize plugin:
+This creates the required serialize/unserialize plugin:
 
     $plugins = new TCrypto\PluginContainer();
 
