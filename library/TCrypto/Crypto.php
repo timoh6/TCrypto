@@ -456,6 +456,7 @@ class Crypto
             if ($tmp !== false)
             {
                 $bytes = $tmp;
+                $hasBytes = true;
             }
         }
 
