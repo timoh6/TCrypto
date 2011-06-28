@@ -81,7 +81,10 @@ class Crypto
      * @param TCrypto\PluginContainer $plugins
      * @param array $options
      */
-    public function __construct(StorageInterface $storage, PluginContainer $plugins, CryptoInterface $crypto = null, array $options = array())
+    public function __construct(StorageInterface $storage,
+                                PluginContainer $plugins,
+                                CryptoInterface $crypto = null,
+                                array $options = array())
     {
         $this->_storageHandler = $storage;
         $this->_cryptoHandler = $crypto;
