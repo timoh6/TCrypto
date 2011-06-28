@@ -54,7 +54,7 @@ Examples
     $tc->setValue('object', new stdClass());
     $tc->removeValue('object');
     
-    echo $tc->getValue('key'); // "Value"
+    echo $tc->getValue('key'); // "value"
     echo $tc->getValue('object'); // "NULL"
     
     // Saves the data to a storage.
