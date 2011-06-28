@@ -45,9 +45,16 @@ Examples
     // mac_key and cipher_key must contain at least 40 characters (bytes).
     // mac_key must be always set. cipher_key needs to be set if encryption
     // will be used.
+
+    // Available options:
+    // (string) 'mac_key'
+    // (string) 'cipher_key'
+    // (array) 'entropy_pool'
+    // (int) 'max_lifetime'
+    // (bool) 'save_on_set'
     $options = array('mac_key' => 'f€ftä=Dt...', 'cipher_key' => 'frVqÅ2#...');
     
-    // Inject the needed dependencies.
+    // Create a new Crypto instance and inject the needed dependencies.
     $tc = new TCrypto\Crypto($storage, $plugins, $crypto, $options);
     
     // Value can be any serializable data type. 
@@ -89,9 +96,9 @@ Otherwise use McryptAes128Cbc.
 
 TCrypto derives encryption keys from variable data (timestamps, initializing
 vector, $_cipherKey and user supplied extra entropy sources). This quarantees
-that a fresh and random key will be used for each encryption operation. Which
-means (currently known) related-key attacks does not apply against AES-256
-(McryptAes256Cbc).
+that a fresh and random key will be used for each encryption operation. The key
+setup compined with (truncated) SHA512 hashing ensures (currently known) related-key
+attacks does not apply against AES-256 (McryptAes256Cbc).
 
 
 Plugins
@@ -105,7 +112,7 @@ First:  before saving the data to a storage.
 Second: after extracting the data from a storage (in reverse order).
 
 This creates the required serialize/unserialize plugin:
-
+ 
     $plugins = new TCrypto\PluginContainer();
 
 You can also attach more plugins:
