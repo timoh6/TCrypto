@@ -129,6 +129,6 @@ and then unserialized.
 
 SECURITY NOTE:
 
-When extracting the data from a storage, a HMAC value will be checked BEFORE
+When extracting the data from a storage, an HMAC value will be checked BEFORE
 the plugins are run. This could potentially lead to bugs or security issues.
 If you use any extra plugins, make sure they operate correctly.
