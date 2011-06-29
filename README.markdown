@@ -109,12 +109,14 @@ Plugins
 TCrypto comes with a simple "plugin system". Plugins are run in two separate
 places.
 
-First:  before saving the data to a storage.
+* Before saving the data to a storage.
 
-Second: after extracting the data from a storage (in reverse order).
+* After extracting the data from a storage (plugins are run in reverse order).
 
 This creates the required serialize/unserialize plugin:
- 
+
+    // PluginContainer() automatically attaches DefaultPlugin(), which handles
+    // serializing and unserializing.
     $plugins = new TCrypto\PluginContainer();
 
 You can also attach more plugins:
