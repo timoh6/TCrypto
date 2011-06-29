@@ -1,10 +1,12 @@
 TCrypto
 =======
 
-TCrypto is a simple PHP 5.3+ key-value storage library for use in storing
-data securely to a "storage backend". By default, a cookie will be used as a storage backend.
+TCrypto is a simple and flexible PHP 5.3+ key-value storage library. By default,
+a cookie will be used as a storage backend.
 
-TCrypto can be used as a scalable "session handler", especially scalable,
+TCrypto has been designed from the ground up with security in mind.
+
+TCrypto can be used as a scalable "session handler". Especially scalable,
 if cookies are used as a storage backend. This is a bit like Ruby on Rails sessions.
 
 TCrypto takes care of checking data integrity, encryption and
@@ -26,7 +28,7 @@ Examples
     $storage = new TCrypto\StorageHandler\Cookie();
     
     // You can pass a boolean false as the first parameter for Cookie,
-    // this makes it possible to use cookies even there is no HTTPS connection,
+    // this makes it possible to use cookies even if there is no HTTPS connection,
     // although this is not recommended.
     // The second parameter for Cookie specifies the name of the cookie.
     // $storage = new TCrypto\StorageHandler\Cookie(false, 'my_cookie_name');
