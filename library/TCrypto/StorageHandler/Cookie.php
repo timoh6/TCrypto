@@ -2,6 +2,8 @@
 namespace TCrypto\StorageHandler;
 
 /**
+ * This is the default cookie storage implementation. A single cookie can
+ * typically hold up to 1-4 kb of data. 
  * 
  * @author timoh <timoh6@gmail.com>
  * @license Public Domain
@@ -45,7 +47,7 @@ class Cookie implements StorageInterface
             $https = '';
         }
         
-        if ($this->_requireSecure === true && empty($https))
+        if ($this->_requireSecure === true && $https === '')
         {
             return false;
         }
