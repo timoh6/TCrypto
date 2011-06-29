@@ -3,7 +3,7 @@ namespace TCrypto\StorageHandler;
 
 /**
  * This is the default cookie storage implementation. A single cookie can
- * typically hold up to 1-4 kb of data. 
+ * typically hold up to 1-4 KB of data. 
  * 
  * @author timoh <timoh6@gmail.com>
  * @license Public Domain
