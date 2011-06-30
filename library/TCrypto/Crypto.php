@@ -153,9 +153,9 @@ class Crypto
      */
     public function save()
     {
-        if (count($this->_data) > 0)
+        if (count($this->_data) > 0 && (false !== ($data = $this->_pluginContainer->saveDispatcher($this->_data))))
         {
-            $data = $this->_pluginContainer->saveDispatcher($this->_data);
+            //$data = $this->_pluginContainer->saveDispatcher($this->_data);
 
             $timestamp = time();
             $macExpire = $timestamp + (int) $this->_macMaxLifetime;

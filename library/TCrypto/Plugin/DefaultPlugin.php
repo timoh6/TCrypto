@@ -10,7 +10,14 @@ class DefaultPlugin implements PluginInterface
 {
     public function saveAction($data)
     {
-        return serialize($data);
+        if (is_array($data))
+        {
+            return serialize($data);
+        }
+        else
+        {
+            return false;
+        }
     }
     
     public function extractAction($data)

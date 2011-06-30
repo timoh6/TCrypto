@@ -10,6 +10,11 @@ class CompressPlugin implements PluginInterface
 {
     public function saveAction($data)
     {
+        if ($data === false)
+        {
+            return false;
+        }
+        
         return gzdeflate($data);
     }
     

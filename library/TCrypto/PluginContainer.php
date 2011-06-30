@@ -39,7 +39,14 @@ class PluginContainer extends \SplObjectStorage
         }
         unset($plugin);
         
-        return $data;
+        if (isset($data[0]))
+        {
+            return $data;
+        }
+        else
+        {
+            return false;
+        }
     }
     
     /**
