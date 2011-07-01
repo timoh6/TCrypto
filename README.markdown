@@ -127,7 +127,35 @@ Now the data will be first serialized and then compressed (when saving).
 When extracting the data from a storage, the data will be first uncompressed
 and then unserialized.
 
-SECURITY NOTE:
+
+Security notes
+--------------
+
+Key management
+~~~~~~~~~~~~~~
+
+TCrypto does not take care of key management. It just simply uses the keys you
+provide (these "master keys" are used to derive the actual HMAC and encryption
+keys). You have to implement topics such as storage, safeguarding and
+replacement of keys by yourself.
+
+There is also no proper "key strength checking" in TCrypto. TCrypto will refuse
+"master keys" (encryption/MAC) that are shorter than 40 bytes. Undoubtedly this
+is not enough. Make sure the keys you provide contains enough entropy.
+
+Cookies as a storage backend
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default, TCrypto uses browser cookies as a "permanent" storage backend. If you
+do not use encryption, anyone who you send the data can read (but not modify)
+it. It is up to you to decide does the data need to be encrypted.
+
+HTTPS connection is another important concern about browser cookies. If there is
+no "secure connection", the data may be captured (and replayed) by whoever is
+eavesdropping on the line.
+
+Plugins
+~~~~~~~
 
 When extracting the data from a storage, an HMAC value will be checked BEFORE
 the plugins are run. This could potentially lead to bugs or security issues.
