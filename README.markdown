@@ -131,8 +131,7 @@ and then unserialized.
 Security notes
 --------------
 
-Key management
-~~~~~~~~~~~~~~
+### Key management
 
 TCrypto does not take care of key management. It just simply uses the keys you
 provide (these "master keys" are used to derive the actual HMAC and encryption
@@ -143,8 +142,7 @@ There is also no proper "key strength checking" in TCrypto. TCrypto will refuse
 "master keys" (encryption/MAC) that are shorter than 40 bytes. Undoubtedly this
 is not enough. Make sure the keys you provide contains enough entropy.
 
-Cookies as a storage backend
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### Cookies as a storage backend
 
 By default, TCrypto uses browser cookies as a "permanent" storage backend. If you
 do not use encryption, anyone who you send the data can read (but not modify)
@@ -154,8 +152,7 @@ HTTPS connection is another important concern about browser cookies. If there is
 no "secure connection", the data may be captured (and replayed) by whoever is
 eavesdropping on the line.
 
-Plugins
-~~~~~~~
+### Plugins
 
 When extracting the data from a storage, an HMAC value will be checked BEFORE
 the plugins are run. This could potentially lead to bugs or security issues.
