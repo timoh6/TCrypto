@@ -20,58 +20,61 @@ TCrypto is placed in the public domain.
 Examples
 --------
 
-    require '/path/to/library/TCrypto/Loader.php';
-    $loader = new TCrypto\Loader();
-    $loader->register();
-    
-    // The data will be stored to a cookie.
-    $storage = new TCrypto\StorageHandler\Cookie();
-    
-    // You can pass a boolean false as the first parameter for Cookie,
-    // this makes it possible to use cookies even if there is no HTTPS connection,
-    // although this is not recommended.
-    // The second parameter for Cookie specifies the name of the cookie.
-    // $storage = new TCrypto\StorageHandler\Cookie(false, 'my_cookie_name');
-    
-    // Initialize encryption (optional).
-    $crypto = new TCrypto\CryptoHandler\McryptAes128Cbc();
-    // or
-    $crypto = new TCrypto\CryptoHandler\McryptAes256Cbc();
-    
-    // Initialize the default plugin (serialize/unserialize).
-    $plugins = new TCrypto\PluginContainer();
-    
-    // Attach an extra plugin (compress/uncompress) (optional).
-    $plugins->attach(new TCrypto\Plugin\CompressPlugin());
-    
-    // mac_key and cipher_key must contain at least 40 characters (bytes).
-    // mac_key must be always set. cipher_key needs to be set if encryption
-    // will be used.
+``` php
+<?php
+require '/path/to/library/TCrypto/Loader.php';
+$loader = new TCrypto\Loader();
+$loader->register();
 
-    // Available options:
-    // (string) 'mac_key'
-    // (string) 'cipher_key'
-    // (array) 'entropy_pool'
-    // (int) 'max_lifetime'
-    // (bool) 'save_on_set'
-    $options = array('mac_key' => 'f€ftä=Dt...', 'cipher_key' => 'frVqÅ2#...');
-    
-    // Create a new Crypto instance and inject the needed dependencies.
-    $tc = new TCrypto\Crypto($storage, $plugins, $crypto, $options);
-    
-    // Value can be any serializable data type. 
-    $tc->setValue('key', 'value');
-    $tc->setValue('object', new stdClass());
-    $tc->removeValue('object');
-    
-    echo $tc->getValue('key'); // "value"
-    echo $tc->getValue('object'); // "NULL"
-    
-    // Saves the data to a storage.
-    $tc->save();
-    
-    // Destroys the data both from memory and storage.
-    $tc->destroy();
+// The data will be stored to a cookie.
+$storage = new TCrypto\StorageHandler\Cookie();
+
+// You can pass a boolean false as the first parameter for Cookie,
+// this makes it possible to use cookies even if there is no HTTPS connection,
+// although this is not recommended.
+// The second parameter for Cookie specifies the name of the cookie.
+// $storage = new TCrypto\StorageHandler\Cookie(false, 'my_cookie_name');
+
+// Initialize encryption (optional).
+$crypto = new TCrypto\CryptoHandler\McryptAes128Cbc();
+// or
+$crypto = new TCrypto\CryptoHandler\McryptAes256Cbc();
+
+// Initialize the default plugin (serialize/unserialize).
+$plugins = new TCrypto\PluginContainer();
+
+// Attach an extra plugin (compress/uncompress) (optional).
+$plugins->attach(new TCrypto\Plugin\CompressPlugin());
+
+// mac_key and cipher_key must contain at least 40 characters (bytes).
+// mac_key must be always set. cipher_key needs to be set if encryption
+// will be used.
+
+// Available options:
+// (string) 'mac_key'
+// (string) 'cipher_key'
+// (array) 'entropy_pool'
+// (int) 'max_lifetime'
+// (bool) 'save_on_set'
+$options = array('mac_key' => 'f€ftä=Dt...', 'cipher_key' => 'frVqÅ2#...');
+
+// Create a new Crypto instance and inject the needed dependencies.
+$tc = new TCrypto\Crypto($storage, $plugins, $crypto, $options);
+
+// Value can be any serializable data type. 
+$tc->setValue('key', 'value');
+$tc->setValue('object', new stdClass());
+$tc->removeValue('object');
+
+echo $tc->getValue('key'); // "value"
+echo $tc->getValue('object'); // "NULL"
+
+// Saves the data to a storage.
+$tc->save();
+
+// Destroys the data both from memory and storage.
+$tc->destroy();
+```
 
 
 About symmetric encryption
