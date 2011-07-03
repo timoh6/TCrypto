@@ -127,7 +127,10 @@ $plugins = new TCrypto\PluginContainer();
 
 You can also attach more plugins:
 
-    $plugins->attach(new TCrypto\Plugin\CompressPlugin());
+``` php
+<?php
+$plugins->attach(new TCrypto\Plugin\CompressPlugin());
+```
 
 Now the data will be first serialized and then compressed (when saving).
 When extracting the data from a storage, the data will be first uncompressed
