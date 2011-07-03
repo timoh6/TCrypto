@@ -115,9 +115,11 @@ places.
 
 This creates the required serialize/unserialize plugin:
 
-    // PluginContainer() automatically attaches DefaultPlugin(), which handles
-    // serializing and unserializing.
-    $plugins = new TCrypto\PluginContainer();
+``` php
+// PluginContainer() automatically attaches DefaultPlugin(), which handles
+// serializing and unserializing.
+$plugins = new TCrypto\PluginContainer();
+```
 
 You can also attach more plugins:
 
