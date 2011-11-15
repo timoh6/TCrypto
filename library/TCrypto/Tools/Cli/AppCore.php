@@ -32,12 +32,6 @@ class AppCore
     
     /**
      *
-     * @var TCrypto\Tools\Serializer\SerializerInterface 
-     */
-    protected $_serializer = null;
-    
-    /**
-     *
      * @var TCrypto\Tools\Keytool\KeyParser
      */
     protected $_keyParser = null;
@@ -53,7 +47,6 @@ class AppCore
         $this->_cli = $cli;
         $this->_settings = $settings;
         $this->_helper = $helper;
-        $this->_serializer = $serializer;
         $this->_keyParser = $keyParser;
     }
     
