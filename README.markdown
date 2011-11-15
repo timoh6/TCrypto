@@ -35,10 +35,11 @@ lifetime (keys that can not be active are removed).
 
 There are a few Keytool settings you can tweak.
 File `TCrypto/bin/keytool.config.php`:
-    **'keyfile_permissions'**: the default filesystem permissions for the keyfile
-    **'bytes_in_key_name'**: key name length
-    **'key_max_lifetime'**: this should be the same as $_macMaxLifetime in TCrypto
-    **'keyfile_location'**: the default keyfile location
+
+- **'keyfile_permissions'**: the default filesystem permissions for the keyfile
+- **'bytes_in_key_name'**: key name length
+- **'key_max_lifetime'**: this should be the same as $_macMaxLifetime in TCrypto
+- **'keyfile_location'**: the default keyfile location
 
 If you remove or comment out 'keyfile_permissions' setting, chmod() won't be run at
 all for the keyfile.
