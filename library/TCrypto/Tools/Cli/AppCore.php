@@ -75,11 +75,6 @@ class AppCore
         return $this->_helper;
     }
     
-    public function serializer()
-    {
-        return $this->_serializer;
-    }
-    
     public function keyParser()
     {
         return $this->_keyParser;
