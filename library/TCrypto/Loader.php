@@ -17,7 +17,6 @@
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
  * @author Fabien Potencier <fabien.potencier@symfony-project.org>
  */
-namespace TCrypto;
 
 class Loader
 {
@@ -34,7 +33,7 @@ class Loader
      */
     public function __construct($ns = null)
     {
-        $includePath = __DIR__ . DIRECTORY_SEPARATOR . '..';
+        $includePath = dirname(__DIR__);
         
         $this->_namespace = $ns;
         $this->_includePath = $includePath;

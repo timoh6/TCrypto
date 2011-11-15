@@ -9,12 +9,77 @@ TCrypto has been designed from the ground up with security in mind.
 TCrypto can be used as a scalable "session handler". Especially scalable,
 if cookies are used as a storage backend. This is a bit like Ruby on Rails sessions.
 
-TCrypto takes care of checking data integrity, encryption and
-storing/retrieving data from the selected storage implementation.
+TCrypto takes care of checking data integrity, encryption, key rotation and
+storing/retrieving data from the selected storage implementation. 
 
 This is a preview release.
 
 TCrypto is placed in the public domain.
+
+
+TCrypto Keymanager and Keytool
+------------------------------
+
+Keytool is a small command-line application, which is used to create encryption
+and authentication keys. Keytool can also be used to remove inactive keys.
+
+Before you start using TCrypto, run Keytool and create your first set of keys:
+
+    $ cd /path/to/TCrypto/bin
+    $ php keytool
+
+To remove inactive keys, run Keytool and select option 2 "Remove inactive keys".
+You should always remove inactive keys before you add new keys. This is because
+inactive keys are determined comparing the (current) primary key timestamp and key
+lifetime (keys that can not be active are removed).
+
+There are a few Keytool settings you can tweak.
+File `TCrypto/bin/keytool.config.php`:
+    **'keyfile_permissions'**: the default filesystem permissions for the keyfile
+    **'bytes_in_key_name'**: key name length
+    **'key_max_lifetime'**: this should be the same as $_macMaxLifetime in TCrypto
+    **'keyfile_location'**: the default keyfile location
+
+If you remove or comment out 'keyfile_permissions' setting, chmod() won't be run at
+all for the keyfile.
+
+
+Keytool stores keys as a plain PHP array. The key format is as follows:
+
+``` php
+<?php
+array (
+  'tcrypto_key_data' => 
+  array (
+    'keys' => 
+    array (
+      'index_xxx' => 
+      array (
+        'encryption' => 'key_xxx',
+        'authentication' => 'key_xxx',
+        'time' => xxx,
+      ),
+    ),
+    'meta_data' => 
+    array (
+      'primary_index' => 'index_xxx',
+      'last_key_creation_time' => xxx,
+    ),
+  ),
+);
+```
+
+'index_xxx' means a unique array index. Keytool will (by default) use 3 bytes of
+entropy in a key name (hexadecimal format). 3 bytes can produce about 8 million
+distinct keys without collisions. Given that you should probably have no more
+than a few keys in your keyfile, 3 bytes of entropy in a key name will be
+easily enough.
+
+'meta_data' is used to identify the current primary key index.
+
+There can be multiple keys in the 'keys' array. However, you should remove
+constantly inactive keys (to avoid filling your key file with "junk"). It is
+a good idea to always remove inactive keys before you add new keys.
 
 
 Examples
@@ -23,8 +88,17 @@ Examples
 ``` php
 <?php
 require '/path/to/library/TCrypto/Loader.php';
-$loader = new TCrypto\Loader();
+$loader = new Loader();
 $loader->register();
+
+// Keymanager handles encryption/authentication keys. By default, Filesystem()
+// method looks the keyfile from `TCrypto/Keystore/default` file. If you want to use
+// another keyfile, simply give the full path of the keyfile to Filesystem()'s
+// constructor. E.g.
+// $keymanager = new TCrypto\KeyManager\Filesystem('/path/to/keyfile');
+$keymanager = new TCrypto\KeyManager\Filesystem();
+// You can also inject the key data as a plain PHP array using setKeysAsArray():
+// $keymanager->setKeysAsArray(array('tcrypto_key_data'...));
 
 // The data will be stored to a cookie.
 $storage = new TCrypto\StorageHandler\Cookie();
@@ -46,20 +120,14 @@ $plugins = new TCrypto\PluginContainer();
 // Attach an extra plugin (compress/uncompress) (optional).
 $plugins->attach(new TCrypto\Plugin\CompressPlugin());
 
-// mac_key and cipher_key must contain at least 40 characters (bytes).
-// mac_key must be always set. cipher_key needs to be set if encryption
-// will be used.
-
 // Available options:
-// (string) 'mac_key'
-// (string) 'cipher_key'
 // (array) 'entropy_pool'
 // (int) 'max_lifetime'
 // (bool) 'save_on_set'
-$options = array('mac_key' => 'f€ftä=Dt...', 'cipher_key' => 'frVqÅ2#...');
+$options = array('max_lifetime' => 6400);
 
 // Create a new Crypto instance and inject the needed dependencies.
-$tc = new TCrypto\Crypto($storage, $plugins, $crypto, $options);
+$tc = new TCrypto\Crypto($keymanager, $storage, $plugins, $crypto, $options);
 
 // Value can be any serializable data type. 
 $tc->setValue('key', 'value');
@@ -100,7 +168,7 @@ If you feel paranoid (the bigger, the better fetish), use McryptAes256Cbc.
 Otherwise use McryptAes128Cbc.
 
 TCrypto derives encryption keys from variable data (timestamps, initializing
-vector, $_cipherKey and user supplied extra entropy sources). This quarantees
+vector, key seeds and user supplied extra entropy sources). This quarantees
 that a fresh and random key will be used for each encryption operation. The key
 setup compined with (truncated) SHA512 hashing ensures (currently known) related-key
 attacks does not apply against AES-256 (McryptAes256Cbc).
@@ -140,16 +208,12 @@ and then unserialized.
 Security notes
 --------------
 
-### Key management
+### Keystore
 
-TCrypto does not take care of key management. It just simply uses the keys you
-provide (these "master keys" are used to derive the actual HMAC and encryption
-keys). You have to implement topics such as storage, safeguarding and
-replacement of keys by yourself.
-
-There is also no proper "key strength checking" in TCrypto. TCrypto will refuse
-"master keys" (encryption/MAC) that are shorter than 40 bytes. Undoubtedly this
-is not enough. Make sure the keys you provide contains enough entropy.
+TCrypto Keytool will write all encryption/authentication keys to a
+filesystem. Make sure this keyfile can not be read by anyone else. It is
+probably a good idea to use chmod 0600 setting for the keyfile
+(depending on your server settings).
 
 ### Cookies as a storage backend
 

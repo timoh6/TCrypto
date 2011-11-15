@@ -32,7 +32,7 @@ class Filesystem implements KeyManagerInterface
     {
         if ($keyfile === null)
         {
-            $keyfile = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Keystore' . DIRECTORY_SEPARATOR . 'default';
+            $keyfile = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Keystore' . DIRECTORY_SEPARATOR . 'default';
         }
         
         $this->_keyfile = $keyfile;

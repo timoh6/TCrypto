@@ -2,7 +2,8 @@
 
 namespace TCrypto;
 
-use TCrypto\StorageHandler\StorageInterface,
+use TCrypto\KeyManager\KeyManagerInterface,
+    TCrypto\StorageHandler\StorageInterface,
     TCrypto\CryptoHandler\CryptoInterface;
 
 /**
@@ -14,21 +15,6 @@ use TCrypto\StorageHandler\StorageInterface,
 class Crypto
 {
     /**
-     * The MAC key. Must be at least 40 bytes.
-     *
-     * @var string
-     */
-    protected $_macKey = '';
-    
-    /**
-     * The Encryption key. Must be at least 40 bytes if data encryption
-     * will be used. Otherwise empty.
-     *
-     * @var string
-     */
-    protected $_cipherKey = '';
-    
-    /**
      * Maximum lifetime of the data (in seconds).
      * "Lifetime" means the maximum allowed time between
      * save() and _extractData() calls.
@@ -36,6 +22,11 @@ class Crypto
      * @var int
      */
     protected $_macMaxLifetime = 3600;
+    
+    /**
+     * @var TCrypto\KeyManager\KeyManagerInterface
+     */
+    protected $_keyManager = null;
     
     /**
      * @var TCrypto\StorageHandler\StorageInterface
@@ -73,31 +64,36 @@ class Crypto
      * @var bool
      */
     protected $_saveOnSet = false;
+    
+    /**
+    * The version delimiter is the (one-byte) character that separates the key
+    * version/data. Must be one character (one byte).
+    *
+    * @var string
+    */
+    const VERSION_DELIMITER = '$';
 
     /**
      *
+     * @param TCrypto\KeyManager\KeyManagerInterface $keyManager
      * @param TCrypto\StorageHandler\StorageInterface $storage
      * @param TCrypto\CryptoHandler\CryptoInterface $crypto
      * @param TCrypto\PluginContainer $plugins
      * @param array $options
      */
-    public function __construct(StorageInterface $storage,
+    public function __construct(KeyManagerInterface $keyManager,
+                                StorageInterface $storage,
                                 PluginContainer $plugins,
                                 CryptoInterface $crypto = null,
                                 array $options = array())
     {
+        $this->_keyManager = $keyManager;
         $this->_storageHandler = $storage;
         $this->_cryptoHandler = $crypto;
         $this->_pluginContainer = $plugins;
 
         $this->_setOptions($options);
         unset($options);
-
-        // A quick and dirty check if $_macKey contains at least 40 bytes.
-        if (!isset($this->_macKey[39]))
-        {
-            throw new Exception('Insufficient parameters: $_macKey must be at least 40 bytes');
-        }
 
         // Extracts the data from a storage.
         $this->_extractData();
@@ -155,8 +151,6 @@ class Crypto
     {
         if (count($this->_data) > 0 && (false !== ($data = $this->_pluginContainer->saveDispatcher($this->_data))))
         {
-            //$data = $this->_pluginContainer->saveDispatcher($this->_data);
-
             $timestamp = time();
             $macExpire = $timestamp + (int) $this->_macMaxLifetime;
 
@@ -164,22 +158,27 @@ class Crypto
             {
                 $ivLen = $this->_cryptoHandler->getIvLen();
                 $keyLen = $this->_cryptoHandler->getKeyLen();
+                
+                $cryptoKeySeed = $this->_keyManager->getKeyByVersion('encryption');
 
-                // A quick and dirty check if $_cipherKey contains at least 40 bytes.
-                if (!isset($this->_cipherKey[39]))
+                // A quick and dirty check if $cryptoKeySeed contains at least 32 bytes.
+                if (!isset($cryptoKeySeed[31]))
                 {
-                    throw new Exception('Insufficient parameters: $_cipherKey must be at least 40 bytes');
+                    unset($cryptoKeySeed);
+                    throw new Exception('Insufficient parameters: encryption key must be at least 32 bytes');
                 }
 
                 if (false === ($iv = $this->getRandomBytes($ivLen)))
                 {
+                    unset($cryptoKeySeed);
                     throw new Exception('Could not get random bytes');
                 }
 
                 try
                 {
                     // Mix $_cipherKey with variables to make it unique (and random) for each encryption.
-                    $cryptoKey = $this->_setupKey(array($timestamp, $macExpire, $iv, $this->_cipherKey));
+                    $cryptoKey = $this->_setupKey(array($timestamp, $macExpire, $iv, $cryptoKeySeed));
+                    unset($cryptoKeySeed);
                     $cryptoKey = $this->_hash($cryptoKey, $keyLen);
                     $data = $iv . $this->_cryptoHandler->encrypt($data, $iv, $cryptoKey);
                     unset($cryptoKey);
@@ -189,25 +188,31 @@ class Crypto
                     throw $e;
                 }
             }
-
-            if (false === ($randomBytes = $this->getRandomBytes(8)))
+            
+            $macKeySeed = (string) $this->_keyManager->getKeyByVersion('authentication');
+            // A quick and dirty check if $macKeySeed contains at least 32 bytes.
+            if (!isset($macKeySeed[31]))
             {
-                throw new Exception('Could not get random bytes');
+                unset($macKeySeed);
+                throw new Exception('Insufficient parameters: authentication key must be at least 32 bytes');
             }
+            
+            // Version identifier.
+            $keyVersion = (string) $this->_keyManager->getPrimaryKeyVersion();
 
             // "Compress" $timestamp and $macExpire to save some space.
-            $dataString = base_convert($timestamp, 10, 36) .
+            $dataString = $keyVersion . '$' .
+                          base_convert($timestamp, 10, 36) .
                           base_convert($macExpire, 10, 36) .
-                          $randomBytes .
                           $data;
 
             try
             {
-                // Mix $_macKey with variables to make it unique (and random) for each dispatch.
-                $macKey = $this->_setupKey(array($timestamp, $macExpire, $randomBytes, $this->_macKey));
+                // Mix $_macKey with variables to add some (weak) entropy for the key.
+                $macKey = $this->_setupKey(array($timestamp, $macExpire, $macKeySeed));
                 $mac = $this->_hmac($dataString, $macKey);
+                unset($macKeySeed, $macKey);
                 $dataString = $mac . $dataString;
-                unset($macKey);
 
                 return $this->_storageHandler->save($dataString);
             }
@@ -237,27 +242,49 @@ class Crypto
     {
         $liveData = $this->_storageHandler->fetch();
         $data = '';
+        $keyVersionDelimiterPosition = false;
+        $keyVersion = '';
+        $keyVersionLength = 0;
+        // $keyVersionLength + VERSION_DELIMITER
+        $keyVersionLengthTotal = 0;
+        
+        if ($liveData !== false)
+        {
+            $keyVersionDelimiterPosition = strpos($liveData, self::VERSION_DELIMITER, 32);
+        }
+        
+        // Version delimeter position must be bigger than 32.
+        if ($keyVersionDelimiterPosition !== false && (int) $keyVersionDelimiterPosition > 32)
+        {
+            $keyVersionLength = $keyVersionDelimiterPosition - 32;
+            
+            // Key version plus version delimeter ("$" character).
+            $keyVersionLengthTotal = $keyVersionLength + 1;
+            $keyVersion = substr($liveData, 32, $keyVersionLength);
+        }
 
-        // A quick check if $liveData has at least the minimum needed amount of bytes.
-        if ($liveData !== false && isset($liveData[52]))
+        // A quick check if $liveData and $keyVersion has at least the minimum needed amount of bytes.
+        if ($liveData !== false && isset($liveData[44 + $keyVersionLengthTotal]) && isset($keyVersion[0]))
         {
             $currentMac = (string) substr($liveData, 0, 32);
-            $timestamp = (int) base_convert((string) substr($liveData, 32, 6), 36, 10);
-            $macExpire = (int) base_convert((string) substr($liveData, 38, 6), 36, 10);
-            $randomBytes = (string) substr($liveData, 44, 8);
-
+            $timestamp = (int) base_convert((string) substr($liveData, 32 + $keyVersionLengthTotal, 6), 36, 10);
+            $macExpire = (int) base_convert((string) substr($liveData, 38 + $keyVersionLengthTotal, 6), 36, 10);
+            
             // Make sure the $timestamp and $macExpire are correct.
             if (time() >= $timestamp && time() <= $macExpire)
             {
                 $dataString = (string) substr($liveData, 32);
-                $macKey = $this->_setupKey(array($timestamp, $macExpire, $randomBytes, $this->_macKey));
+                $macKeySeed = (string) $this->_keyManager->getKeyByVersion('authentication', $keyVersion);
+                $macKey = $this->_setupKey(array($timestamp, $macExpire, $macKeySeed));
+                unset($macKeySeed);
                 $mac = $this->_hmac($dataString, $macKey);
+                unset($macKey);
 
                 // "Constant time" string comparison to prevent timing attacks.
-                // (==/=== string comparison).
+                // (timing leaks via "==" string comparison).
                 if ($this->compareString($currentMac, $mac) === true)
                 {
-                    $data = substr($dataString, 20);
+                    $data = substr($dataString, 12 + $keyVersionLengthTotal);
 
                     if ($this->_cryptoHandler !== null)
                     {
@@ -271,7 +298,9 @@ class Crypto
 
                             try
                             {
-                                $cryptoKey = $this->_setupKey(array($timestamp, $macExpire, $iv, $this->_cipherKey));
+                                $cryptoKeySeed = (string) $this->_keyManager->getKeyByVersion('encryption', $keyVersion);
+                                $cryptoKey = $this->_setupKey(array($timestamp, $macExpire, $iv, $cryptoKeySeed));
+                                unset($cryptoKeySeed);
                                 $cryptoKey = $this->_hash($cryptoKey, $keyLen);
                                 $data = $this->_cryptoHandler->decrypt(substr($data, $ivLen), $iv, $cryptoKey);
                                 unset($cryptoKey);
@@ -341,14 +370,6 @@ class Crypto
      */
     protected function _setOptions(array $options = array())
     {
-        if (isset($options['mac_key']))
-        {
-            $this->_macKey = (string) $options['mac_key'];
-        }
-        if (isset($options['cipher_key']))
-        {
-            $this->_cipherKey = (string) $options['cipher_key'];
-        }
         if (isset($options['entropy_pool']))
         {
             // For example array($_SERVER['REMOTE_ADDR'])
