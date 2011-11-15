@@ -4,7 +4,6 @@ namespace TCrypto\Tools\Cli;
 use TCrypto\Tools\Cli\Horde\Cli as HordeCli;
 use TCrypto\Tools\SettingStore;
 use TCrypto\Tools\Keytool\Filesystem;
-use TCrypto\Tools\Serializer\SerializerInterface;
 use TCrypto\Tools\Keytool\KeyParser;
 
 /**
