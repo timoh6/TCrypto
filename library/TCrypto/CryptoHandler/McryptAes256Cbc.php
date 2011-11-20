@@ -8,17 +8,10 @@ namespace TCrypto\CryptoHandler;
  */
 class McryptAes256Cbc implements CryptoInterface
 {
-    protected $_td = null;
     
     public function __construct()
     {
-        // AES in CBC mode.
-        if (false === ($td = mcrypt_module_open('rijndael-128', '', 'cbc', '')))
-        {
-            return false;
-        }
-        
-        $this->_td = $td;
+        //
     }
     
     /**
@@ -30,16 +23,18 @@ class McryptAes256Cbc implements CryptoInterface
      */
     public function encrypt($data, $iv, $key)
     {
-        // Max. 2^32 blocks with a same key (not realistic in a web application).
-        if (mcrypt_generic_init($this->_td, $key, $iv) !== 0)
+        // AES in CBC mode.
+        if (false === ($td = $this->_moduleInit($iv, $key)))
         {
             return false;
         }
         
         $data = rtrim($data, "\0");
-        $cipherText = mcrypt_generic($this->_td, $data);
-        mcrypt_generic_deinit($this->_td);
-        unset($data, $iv, $key);
+        $cipherText = mcrypt_generic($td, $data);
+        
+        mcrypt_generic_deinit($td);
+        mcrypt_module_close($td);
+        unset($data, $iv, $key, $td);
 
         return $cipherText;
     }
@@ -53,17 +48,18 @@ class McryptAes256Cbc implements CryptoInterface
      */
     public function decrypt($data, $iv, $key)
     {
-        if (mcrypt_generic_init($this->_td, $key, $iv) !== 0)
+        // AES in CBC mode.
+        if (false === ($td = $this->_moduleInit($iv, $key)))
         {
             return false;
         }
 
-        $plainText = mdecrypt_generic($this->_td, $data);
-
+        $plainText = mdecrypt_generic($td, $data);
         $plainText = rtrim($plainText, "\0");
         
-        mcrypt_generic_deinit($this->_td);
-        unset($data, $iv, $key);
+        mcrypt_generic_deinit($td);
+        mcrypt_module_close($td);
+        unset($data, $iv, $key, $td);
 
         return $plainText;
     }
@@ -90,11 +86,31 @@ class McryptAes256Cbc implements CryptoInterface
         return 32;
     }
     
-    public function __destruct()
+    /**
+     * Initialize Mcrypt.
+     * 
+     * @param string $iv
+     * @param string $key
+     * @return Mcrypt resource|false 
+     */
+    protected function _moduleInit($iv, $key)
     {
-        if ($this->_td !== null)
+        // AES in CBC mode.
+        if (false === ($td = mcrypt_module_open('rijndael-128', '', 'cbc', '')))
         {
-            mcrypt_module_close($this->_td);
+            return false;
         }
+        
+        // Max. 2^32 blocks with a same key (not realistic in a web application).
+        if (mcrypt_generic_init($td, $key, $iv) !== 0)
+        {
+            unset($key, $iv);
+            
+            return false;
+        }
+        
+        unset($key, $iv);
+        
+        return $td;
     }
 }
