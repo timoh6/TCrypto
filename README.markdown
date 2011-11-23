@@ -119,7 +119,7 @@ $crypto = new TCrypto\CryptoHandler\McryptAes256Cbc();
 $plugins = new TCrypto\PluginContainer();
 
 // Attach an extra plugin (compress/uncompress) (optional).
-$plugins->attach(new TCrypto\Plugin\CompressPlugin());
+$plugins->attachPlugin(new TCrypto\Plugin\CompressPlugin());
 
 // Available options:
 // (array) 'entropy_pool'
@@ -198,12 +198,15 @@ You can also attach more plugins:
 
 ``` php
 <?php
-$plugins->attach(new TCrypto\Plugin\CompressPlugin());
+$plugins->attachPlugin(new TCrypto\Plugin\CompressPlugin());
 ```
 
 Now the data will be first serialized and then compressed (when saving).
 When extracting the data from a storage, the data will be first uncompressed
 and then unserialized.
+
+NOTE: $plugins->attach() is not supported anymore. Use $plugins->attachPlugin()
+instead of $plugins->attach().
 
 
 Security notes

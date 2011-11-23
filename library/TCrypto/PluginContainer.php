@@ -14,14 +14,14 @@ class PluginContainer extends \SplObjectStorage
 {
     public function __construct()
     {
-        parent::attach(new DefaultPlugin());
+        $this->attachPlugin(new DefaultPlugin());
     }
     
     /**
      *
      * @param TCrypto\Plugin\PluginInterface $plugin 
      */
-    public function attach(PluginInterface $plugin)
+    public function attachPlugin(PluginInterface $plugin)
     {
         parent::attach($plugin);
     }
@@ -74,5 +74,10 @@ class PluginContainer extends \SplObjectStorage
         unset($plugin);
         
         return $data;
+    }
+    
+    public function attach($data, $value = null)
+    {
+        throw new Exception('PluginContainer::attach() is not supported. Use attachPlugin() instead of attach().');
     }
 }
