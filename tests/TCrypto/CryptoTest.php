@@ -28,8 +28,9 @@ class TCrypto_CryptoTest extends PHPUnit_Framework_TestCase
     {
         $value1 = 'Press any key to continue.';
         
-        $keymanager = $this->getMock('TCrypto\\KeyManager\\Filesystem', array('getKeyByVersion'));
+        $keymanager = $this->getMock('TCrypto\\KeyManager\\Filesystem');
         $keymanager->expects($this->any())->method('getKeyByVersion')->will($this->returnValue('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'));
+        $keymanager->expects($this->any())->method('getPrimaryKeyVersion')->will($this->returnValue('xxx'));
         
         $storage = new TCrypto\StorageHandler\ArrayStorage();
         
@@ -50,7 +51,7 @@ class TCrypto_CryptoTest extends PHPUnit_Framework_TestCase
     {
         $default = 'default';
         
-        $keymanager = $this->getMock('TCrypto\\KeyManager\\Filesystem', array('getKeyByVersion'));
+        $keymanager = $this->getMock('TCrypto\\KeyManager\\Filesystem');
         $keymanager->expects($this->any())->method('getKeyByVersion')->will($this->returnValue('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'));
         
         $storage = new TCrypto\StorageHandler\ArrayStorage();  
