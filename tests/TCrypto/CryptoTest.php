@@ -34,7 +34,7 @@ class TCrypto_CryptoTest extends PHPUnit_Framework_TestCase
         
         $storage = new TCrypto\StorageHandler\ArrayStorage();
         
-        $plugins = $this->getMock('TCrypto\\PluginContainer', array('saveDispatcher', 'extractDispatcher'));
+        $plugins = $this->getMock('TCrypto\\PluginContainer');
         $plugins->expects($this->once())->method('saveDispatcher')->will($this->returnCallback('serialize'));
         $plugins->expects($this->once())->method('extractDispatcher')->will($this->returnCallback('unserialize'));
         
