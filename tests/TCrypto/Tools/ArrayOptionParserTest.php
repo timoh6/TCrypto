@@ -4,7 +4,7 @@ class TCrypto_Tools_ArrayOptionParserTest extends PHPUnit_Framework_TestCase
 {
     public function testCanParseValues()
     {
-        $path = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'Data' . DIRECTORY_SEPARATOR . 'sample.php';
+        $path = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'Data' . DIRECTORY_SEPARATOR . 'sampleOptions.php';
         $aop = new TCrypto\Tools\ArrayOptionParser($path);
         
         $expected1 = 3;
