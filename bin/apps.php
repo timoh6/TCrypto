@@ -227,7 +227,7 @@ $removeInactiveKeys = function($core)
         {   
             $core->helper()->isValidFile($keyfile);
             
-            $keyContents = '';
+            $keyContents = array();
             if (file_exists($keyfile))
             {
                 $keyContents = (array) include $keyfile;
