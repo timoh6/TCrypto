@@ -201,7 +201,7 @@ class Crypto
             $keyVersion = (string) $this->_keyManager->getPrimaryKeyVersion();
 
             // "Compress" $timestamp and $macExpire to save some space.
-            $dataString = $keyVersion . '$' .
+            $dataString = $keyVersion . self::VERSION_DELIMITER .
                           base_convert($timestamp, 10, 36) .
                           base_convert($macExpire, 10, 36) .
                           $data;
