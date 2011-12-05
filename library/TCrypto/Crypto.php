@@ -144,7 +144,7 @@ class Crypto
     /**
      * Saves the data to a storage.
      *
-     * @thows TCrypto\Exception
+     * @throws TCrypto\Exception
      * @return boolean
      */
     public function save()
@@ -339,7 +339,7 @@ class Crypto
      *
      * @param array $fields
      * @return string
-     * @thows TCrypto\Exception
+     * @throws TCrypto\Exception
      */
     protected function _setupKey(array $fields = array())
     {
