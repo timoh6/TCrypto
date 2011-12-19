@@ -49,6 +49,8 @@ class Cookie implements StorageInterface
         
         if ($this->_requireSecure === true && $https === '')
         {
+            unset($dataString);
+            
             return false;
         }
         
@@ -87,6 +89,8 @@ class Cookie implements StorageInterface
         $value = str_replace(array('-', '_'), array('+', '/'), $value);
         if (false === ($value = base64_decode($value, true)))
         {
+            unset($value);
+            
             return false;
         }
 
