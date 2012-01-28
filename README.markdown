@@ -225,6 +225,10 @@ By default, TCrypto uses browser cookies as a "permanent" storage backend. If yo
 do not use encryption, anyone who you send the data can read (but not modify)
 it. It is up to you to decide does the data need to be encrypted.
 
+It should be pointed out that TCrypto does not address replay of old cookies.
+Legitimate client can send previous (old) cookies within the "max_lifetime"
+period. 
+
 HTTPS connection is another important concern about browser cookies. If there is
 no "secure connection", the data may be captured (and replayed) by whoever is
 eavesdropping on the line.
