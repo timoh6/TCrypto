@@ -433,7 +433,7 @@ class Crypto
         $stringA = (string) $stringA;
         $stringB = (string) $stringB;
 
-        if (strlen($stringA) === 0 || strlen($stringB) === 0)
+        if (strlen($stringA) === 0)
         {
             return false;
         }
