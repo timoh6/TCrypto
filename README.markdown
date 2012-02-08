@@ -1,5 +1,5 @@
-TCrypto
-=======
+About
+=====
 
 [![Build Status](https://secure.travis-ci.org/timoh6/TCrypto.png)](http://travis-ci.org/timoh6/TCrypto)
 
@@ -17,6 +17,14 @@ storing/retrieving data from the selected storage implementation.
 This is a preview release.
 
 TCrypto is placed in the public domain.
+
+
+Requirements
+------------
+
+TCrypto requires PHP version 5.3 or greater. To use encryption, either Mcrypt or
+OpenSSL extension must be available. If OpenSSL is used for encryption,
+PHP 5.3.3 or greater is required. Optional compression plugin requires zlib.
 
 
 TCrypto Keymanager and Keytool
@@ -112,7 +120,11 @@ $storage = new TCrypto\StorageHandler\Cookie();
 // The second parameter for Cookie specifies the name of the cookie.
 // $storage = new TCrypto\StorageHandler\Cookie(false, 'my_cookie_name');
 
-// Initialize encryption (optional).
+// Initialize encryption using either OpenSSL or Mcrypt (optional).
+$crypto = new TCrypto\CryptoHandler\OpenSslAes128Cbc();
+// or
+$crypto = new TCrypto\CryptoHandler\OpenSslAes256Cbc();
+// or
 $crypto = new TCrypto\CryptoHandler\McryptAes128Cbc();
 // or
 $crypto = new TCrypto\CryptoHandler\McryptAes256Cbc();
@@ -151,21 +163,23 @@ $tc->destroy();
 About symmetric encryption
 --------------------------
 
-Currently there are two choices for an encryption provider:
+Currently there are four choices for an encryption provider:
 
+    Crypto\CryptoHandler\OpenSslAes128Cbc
     Crypto\CryptoHandler\McryptAes128Cbc
 
 and
 
+    Crypto\CryptoHandler\OpenSslAes256Cbc
     Crypto\CryptoHandler\McryptAes256Cbc
 
-McryptAes128Cbc and McryptAes256Cbc both implememt AES in CBC mode using a random
-initializing vector. Only the key size differs between them. 128-bit key size
-should be unbreakable with foreseeable technology. But on the other hand,
-256-bit keys provides more margin of security (against side channels etc.).
-Encrypting with 128-bit keys should be somewhat faster than encrypting with
-256-bit keys. However, in a typical web application usage scenario, this speed
-difference is probably insignificant.
+OpenSslAes128Cbc/McryptAes128Cbc and OpenSslAes256Cbc/McryptAes256Cbc both
+implememt AES in CBC mode using a random initializing vector. Only the key size
+differs between them. 128-bit key size should be unbreakable with foreseeable
+technology. But on the other hand, 256-bit keys provides more margin of security
+(against side channels etc.). Encrypting with 128-bit keys should be somewhat
+faster than encrypting with 256-bit keys. However, in a typical web application
+usage scenario, this speed difference is probably insignificant.
 
 If you feel paranoid (the bigger, the better fetish), use McryptAes256Cbc.
 Otherwise use McryptAes128Cbc.
@@ -175,6 +189,9 @@ vector, key seeds and user supplied extra entropy sources). This quarantees
 that a fresh and random key will be used for each encryption operation. The key
 setup compined with (truncated) SHA512 hashing ensures (currently known) related-key
 attacks does not apply against AES-256 (McryptAes256Cbc).
+
+If your system supports OpenSSL, use OpenSSL based encryption (OpenSslAes128Cbc
+or OpenSslAes256Cbc).
 
 
 Plugins
@@ -240,3 +257,9 @@ eavesdropping on the line.
 When extracting the data from a storage, an HMAC value will be checked BEFORE
 the plugins are run. This could potentially lead to bugs or security issues.
 If you use any extra plugins, make sure they operate correctly.
+
+
+Issues or questions?
+--------------------
+
+Mail me at timoh6@gmail.com or use GitHub.

@@ -2,6 +2,14 @@
 
 class TCrypto_CryptoHandler_McryptAes256CbcTest extends PHPUnit_Framework_TestCase
 {
+    protected function setUp()
+    {
+        if (!extension_loaded('mcrypt'))
+        {
+            $this->markTestSkipped('The Mcrypt extension is not available');
+        }
+    }
+    
     public function testEncryptWithAesVectors()
     {
         $key = pack("H*" , '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');

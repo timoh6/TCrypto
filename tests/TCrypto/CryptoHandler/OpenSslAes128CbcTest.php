@@ -1,12 +1,12 @@
 <?php
 
-class TCrypto_CryptoHandler_McryptAes128CbcTest extends PHPUnit_Framework_TestCase
+class TCrypto_CryptoHandler_OpenSslAes128CbcTest extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        if (!extension_loaded('mcrypt'))
+        if (!extension_loaded('openssl') || PHP_VERSION < '5.3.3')
         {
-            $this->markTestSkipped('The Mcrypt extension is not available');
+            $this->markTestSkipped('The OpenSSl extension is not available, or PHP version is less than 5.3.3.');
         }
     }
     
@@ -17,7 +17,7 @@ class TCrypto_CryptoHandler_McryptAes128CbcTest extends PHPUnit_Framework_TestCa
         $plaintext = pack("H*" , '6bc1bee22e409f96e93d7e117393172a');
         $expectedCiphertext = pack("H*", '7649abac8119b246cee98e9b12e9197d8964e0b149c10b7b682e6e39aaeb731c');
         
-        $aes = new TCrypto\CryptoHandler\McryptAes128Cbc();
+        $aes = new TCrypto\CryptoHandler\OpenSslAes128Cbc();
         $ciphertext = $aes->encrypt($plaintext, $iv, $key);
         
         $this->assertEquals($expectedCiphertext, $ciphertext);
@@ -30,7 +30,7 @@ class TCrypto_CryptoHandler_McryptAes128CbcTest extends PHPUnit_Framework_TestCa
         $expectedPlaintext = pack("H*" , '6bc1bee22e409f96e93d7e117393172a');
         $ciphertext = pack("H*" , '7649abac8119b246cee98e9b12e9197d8964e0b149c10b7b682e6e39aaeb731c');
         
-        $aes = new TCrypto\CryptoHandler\McryptAes128Cbc();
+        $aes = new TCrypto\CryptoHandler\OpenSslAes128Cbc();
         $plaintext = $aes->decrypt($ciphertext, $iv, $key);
         
         $this->assertEquals($expectedPlaintext, $plaintext);
@@ -42,7 +42,7 @@ class TCrypto_CryptoHandler_McryptAes128CbcTest extends PHPUnit_Framework_TestCa
         $iv = str_repeat(chr(65), 16);
         $key = str_repeat(chr(66), 16);
         
-        $aes = new TCrypto\CryptoHandler\McryptAes128Cbc();
+        $aes = new TCrypto\CryptoHandler\OpenSslAes128Cbc();
         $ciphertext = $aes->encrypt($originalPlaintext, $iv, $key);
         $plainText = $aes->decrypt($ciphertext, $iv, $key);
         
