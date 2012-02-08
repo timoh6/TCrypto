@@ -89,22 +89,29 @@ class TCrypto_CryptoHandler_McryptAes256CbcTest extends PHPUnit_Framework_TestCa
     
     public function testPkcs7StripSetsDataAsFalseOnInvalidPad()
     {
-        $result1 = 'abc';
-        $expectedResult1 = false;
-        $stripper = new ReflectionMethod('TCrypto\\CryptoHandler\\McryptAes256Cbc', '_pkcs7Strip');
-        $stripper->setAccessible(true);
-        $stripper->invokeArgs(new TCrypto\CryptoHandler\McryptAes256Cbc(), array(&$result1));
-        
-        $result2 = 'aaaaaaaaaaaaaaa' . chr(2);
-        $expectedResult2 = false;
-        $stripper->invokeArgs(new TCrypto\CryptoHandler\McryptAes256Cbc(), array(&$result2));
-        
-        $result3 = 'aaaaaaaaaaaaaaaa';
-        $expectedResult3 = false;
-        $stripper->invokeArgs(new TCrypto\CryptoHandler\McryptAes256Cbc(), array(&$result3));
+        if (PHP_VERSION >= '5.3.2')
+        {
+            $result1 = 'abc';
+            $expectedResult1 = false;
+            $stripper = new ReflectionMethod('TCrypto\\CryptoHandler\\McryptAes256Cbc', '_pkcs7Strip');
+            $stripper->setAccessible(true);
+            $stripper->invokeArgs(new TCrypto\CryptoHandler\McryptAes256Cbc(), array(&$result1));
 
-        $this->assertEquals($result1, $expectedResult1);
-        $this->assertEquals($result2, $expectedResult2);
-        $this->assertEquals($result3, $expectedResult3);
+            $result2 = 'aaaaaaaaaaaaaaa' . chr(2);
+            $expectedResult2 = false;
+            $stripper->invokeArgs(new TCrypto\CryptoHandler\McryptAes256Cbc(), array(&$result2));
+
+            $result3 = 'aaaaaaaaaaaaaaaa';
+            $expectedResult3 = false;
+            $stripper->invokeArgs(new TCrypto\CryptoHandler\McryptAes256Cbc(), array(&$result3));
+
+            $this->assertEquals($result1, $expectedResult1);
+            $this->assertEquals($result2, $expectedResult2);
+            $this->assertEquals($result3, $expectedResult3);
+        }
+        else
+        {
+            $this->markTestSkipped('Need PHP 5.3.2+ to test private methods.');
+        }
     }
 }
