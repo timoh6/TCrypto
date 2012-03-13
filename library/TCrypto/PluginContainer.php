@@ -12,9 +12,28 @@ use TCrypto\Plugin\PluginInterface,
  */
 class PluginContainer extends \SplObjectStorage
 {
-    public function __construct()
+    /**
+     * By default, PluginContainer is constructed using DefaultPlugin
+     * as the first plugin. DefaultPlugin will serialize/unserialize TCrypto's
+     * $_data array. If you wish to use your own "DefaultPlugin", make sure it
+     * serializes/unserializes the data.
+     * 
+     * As an example, you could use a custom plugin which uses Igbinary
+     * instead of the standard PHP serializer:
+     * $plugins = new TCrypto\PluginContainer(new MyIgbinarySerializerPlugin());
+     *
+     * @param TCrypto\Plugin\PluginInterface $firstPlugin 
+     */
+    public function __construct(PluginInterface $firstPlugin = null)
     {
-        $this->attachPlugin(new DefaultPlugin());
+        if ($firstPlugin === null)
+        {
+            $this->attachPlugin(new DefaultPlugin());
+        }
+        else
+        {
+            $this->attachPlugin($firstPlugin);
+        }
     }
     
     /**
@@ -57,14 +76,8 @@ class PluginContainer extends \SplObjectStorage
     public function extractDispatcher($data)
     {
         // Reverse plugins. Plugins need to be called in reverse order
-        // when extracting data. This "double foreach" smells a bit hacky...
-        $reverseContainer = array();
-        
-        foreach ($this as $plugin)
-        {
-            $reverseContainer[] = $plugin;
-        }
-        
+        // when extracting data.
+        $reverseContainer = iterator_to_array($this);
         $reverseContainer = array_reverse($reverseContainer);
         
         foreach ($reverseContainer as $plugin)
@@ -74,10 +87,5 @@ class PluginContainer extends \SplObjectStorage
         unset($plugin);
         
         return $data;
-    }
-    
-    public function attach($data, $value = null)
-    {
-        throw new Exception('PluginContainer::attach() is not supported. Use attachPlugin() instead of attach().');
     }
 }
