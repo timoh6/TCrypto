@@ -101,7 +101,8 @@ Examples
 require '/path/to/library/TCrypto/Loader.php';
 $loader = new Loader();
 $loader->register();
-// Or more simply, use [Composer](http://getcomposer.org/download/ "Composer"). Add something like "tcrypto/tcrypto": "*" to
+// Or more simply, use [Composer](http://getcomposer.org/download/ "Composer").
+// Add something like "tcrypto/tcrypto": "*" to
 // your composer.json:
 ```
     {
