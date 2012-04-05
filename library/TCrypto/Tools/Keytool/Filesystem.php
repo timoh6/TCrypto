@@ -55,6 +55,14 @@ class Filesystem
             }
             else
             {
+                // Empty file (valid keyfile)
+                $tmpString = @file_get_contents($keyfile);
+                if ($tmpString === '')
+                {
+                    return;
+                }
+                unset($tmpString);
+            
                 // Valid keyfile.
                 if (is_array($tmp) && isset($tmp['tcrypto_key_data']))
                 {

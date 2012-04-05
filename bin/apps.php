@@ -144,6 +144,8 @@ $displayKeyCount = function($core)
 
     try
     {
+        $core->helper()->isValidFile($keyfile);
+        
         $keyCount = 0;
         $keyContents = '';
         
@@ -161,14 +163,9 @@ $displayKeyCount = function($core)
             if (isset($keyContents['tcrypto_key_data']['keys']) && is_array($keyContents['tcrypto_key_data']['keys']))
             {
                 $keyCount = count($keyContents['tcrypto_key_data']['keys']);
-                unset($keyContents);
             }
         }
-        else
-        {
-            unset($keyContents);
-            throw new \Exception('The specified file does not look like a valid TCrypto keyfile.');
-        }
+        unset($keyContents);
         
         $core->cli()->writeln( $core->cli()->blue('Key count: ') . (int) $keyCount);
     }
