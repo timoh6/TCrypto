@@ -6,13 +6,13 @@ About
 TCrypto is a simple and flexible PHP 5.3+ key-value storage library. By default,
 a cookie will be used as a storage backend.
 
-TCrypto has been designed from the ground up with security in mind.
+TCrypto has been designed from the ground up with security in mind. Safe algorithms
+and modes. Automatic and safe initialization vector creation. Encryption and
+authentication key creation (Keytool) using strong randomness. Key rotation
+(versioned keys).
 
 TCrypto can be used as a scalable "session handler". Especially scalable,
 if cookies are used as a storage backend. This is a bit like Ruby on Rails sessions.
-
-TCrypto takes care of checking data integrity, encryption, key rotation and
-storing/retrieving data from the selected storage implementation. 
 
 This is a preview release.
 
@@ -101,7 +101,16 @@ Examples
 require '/path/to/library/TCrypto/Loader.php';
 $loader = new Loader();
 $loader->register();
-
+// Or more simply, use [Composer](http://getcomposer.org/download/ "Composer"). Add something like "tcrypto/tcrypto": "*" to
+// your composer.json:
+```
+    {
+        "require": {
+            "tcrypto/tcrypto": "*"
+        }
+    }
+``` php
+<?php
 // Keymanager handles encryption/authentication keys. By default, Filesystem()
 // method looks the keyfile from `TCrypto/Keystore/default` file. If you want to use
 // another keyfile, simply give the full path of the keyfile to Filesystem()'s
