@@ -38,6 +38,9 @@ Before you start using TCrypto, run Keytool and create your first set of keys:
     $ cd /path/to/TCrypto/bin
     $ php keytool
 
+Make sure the right keyfile is selected (if necessary, change keyfile) and select
+option 1 "Add new keys".
+
 To remove inactive keys, run Keytool and select option 2 "Remove inactive keys".
 You should always remove inactive keys before you add new keys. This is because
 inactive keys are determined comparing the (current) primary key timestamp and key
@@ -122,7 +125,6 @@ $keymanager = new TCrypto\KeyManager\Filesystem();
 
 // The data will be stored to a cookie.
 $storage = new TCrypto\StorageHandler\Cookie();
-
 // You can pass a boolean false as the first parameter for Cookie,
 // this makes it possible to use cookies even if there is no HTTPS connection,
 // although this is not recommended.
