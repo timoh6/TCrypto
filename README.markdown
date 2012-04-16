@@ -107,11 +107,13 @@ $loader->register();
 // Or more simply, use Composer http://getcomposer.org/download/
 // Add something like "tcrypto/tcrypto": "*" to your composer.json:
 ```
+``` json
     {
         "require": {
             "tcrypto/tcrypto": "*"
         }
     }
+```
 ``` php
 <?php
 // Keymanager handles encryption/authentication keys. By default, Filesystem()
