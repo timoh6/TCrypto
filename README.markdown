@@ -108,11 +108,11 @@ $loader->register();
 // Add something like "tcrypto/tcrypto": "*" to your composer.json:
 ```
 ``` json
-    {
-        "require": {
-            "tcrypto/tcrypto": "*"
-        }
+{
+    "require": {
+        "tcrypto/tcrypto": "*"
     }
+}
 ```
 ``` php
 <?php
