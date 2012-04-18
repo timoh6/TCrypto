@@ -270,14 +270,17 @@ class Crypto
             $timestamp = (int) base_convert((string) substr($liveData, 32 + $keyVersionLengthTotal, 6), 36, 10);
             $macExpire = (int) base_convert((string) substr($liveData, 38 + $keyVersionLengthTotal, 6), 36, 10);
             
-            // Make sure the $timestamp and $macExpire are correct.
-            if (time() >= $timestamp && time() <= $macExpire)
+            // Make sure the $timestamp and $macExpire are correct. Also, get random
+            // bytes for a HMAC key (HMAC is applied two times, the second HMAC round
+            // uses this random key).
+            if (time() >= $timestamp && time() <= $macExpire && (false !== ($secondRoundMacKey = $this->getRandomBytes(128))))
             {
                 $dataString = (string) substr($liveData, 32);
                 $macKeySeed = (string) $this->_keyManager->getKeyByVersion('authentication', $keyVersion);
                 $macKey = $this->_setupKey(array($timestamp, $macExpire, $macKeySeed));
                 unset($macKeySeed);
                 $mac = $this->_hmac($dataString, $macKey);
+                unset($macKey);
 
                 // "Constant time" string comparison using compareString() to
                 // prevent timing attacks. (timing leaks via "==" string comparison).
@@ -285,9 +288,10 @@ class Crypto
                 // We also double HMAC to randomize the bytes. This should make timing
                 // attacks infeasible even if our constant-time comparison "fails"
                 // (if it is optimized away by the compiler or PHP itself or PHP accelerator etc.).
-                $currentMac = $this->_hmac($currentMac, $macKey);
-                $mac = $this->_hmac($mac, $macKey);
-                unset($macKey);
+                $currentMac = $this->_hmac($currentMac, $secondRoundMacKey);
+                $mac = $this->_hmac($mac, $secondRoundMacKey);
+                unset($secondRoundMacKey);
+                
                 if ($this->compareString($currentMac, $mac) === true)
                 {
                     $data = substr($dataString, 12 + $keyVersionLengthTotal);
