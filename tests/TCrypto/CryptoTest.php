@@ -86,7 +86,7 @@ class TCrypto_CryptoTest extends PHPUnit_Framework_TestCase
      */
     public function testCannotHashKeysLongerThan32Bytes()
     {
-        if (PHP_VERSION >= '5.3.2')
+        if (version_compare(PHP_VERSION, '5.3.2') >= 0)
         {
             $keymanager = $this->getMock('TCrypto\\KeyManager\\Filesystem');
             $storage = new TCrypto\StorageHandler\ArrayStorage();  

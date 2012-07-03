@@ -51,7 +51,7 @@ class TCrypto_CryptoHandler_McryptAes256CbcTest extends PHPUnit_Framework_TestCa
     
     public function testPkcs7Pad()
     {
-        if (PHP_VERSION >= '5.3.2')
+        if (version_compare(PHP_VERSION, '5.3.2') >= 0)
         {
             $string1 = 'abcdefg';
             $expectedPaddedString1 = 'abcdefg' . str_repeat(chr(9), 9);
@@ -74,7 +74,7 @@ class TCrypto_CryptoHandler_McryptAes256CbcTest extends PHPUnit_Framework_TestCa
     
     public function testPkcs7Strip()
     {
-        if (PHP_VERSION >= '5.3.2')
+        if (version_compare(PHP_VERSION, '5.3.2') >= 0)
         {
             $paddedString1 = 'abcdefg' . str_repeat(chr(9), 9);
             $expectedStrippedString1 = 'abcdefg';
@@ -97,7 +97,7 @@ class TCrypto_CryptoHandler_McryptAes256CbcTest extends PHPUnit_Framework_TestCa
     
     public function testPkcs7StripSetsDataAsFalseOnInvalidPad()
     {
-        if (PHP_VERSION >= '5.3.2')
+        if (version_compare(PHP_VERSION, '5.3.2') >= 0)
         {
             $result1 = 'abc';
             $expectedResult1 = false;

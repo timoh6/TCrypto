@@ -4,7 +4,7 @@ class TCrypto_CryptoHandler_OpenSslAes128CbcTest extends PHPUnit_Framework_TestC
 {
     protected function setUp()
     {
-        if (!extension_loaded('openssl') || PHP_VERSION < '5.3.3')
+        if (!extension_loaded('openssl') || version_compare(PHP_VERSION, '5.3.3') < 0)
         {
             $this->markTestSkipped('The OpenSSl extension is not available, or PHP version is less than 5.3.3.');
         }
