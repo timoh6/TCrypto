@@ -282,17 +282,13 @@ class Crypto
                 $mac = $this->_hmac($dataString, $macKey);
                 unset($macKey);
 
-                // "Constant time" string comparison using compareString() to
-                // prevent timing attacks. (timing leaks via "==" string comparison).
-                // 
-                // We also double HMAC to randomize the bytes. This should make timing
-                // attacks infeasible even if our constant-time comparison "fails"
-                // (if it is optimized away by the compiler or PHP itself or PHP accelerator etc.).
+                // We "double HMAC" to randomize the bytes. This should make
+                // timing attacks infeasible.
                 $currentMac = $this->_hmac($currentMac, $secondRoundMacKey);
                 $mac = $this->_hmac($mac, $secondRoundMacKey);
                 unset($secondRoundMacKey);
                 
-                if ($this->compareString($currentMac, $mac) === true)
+                if ($currentMac === $mac)
                 {
                     $data = substr($dataString, 12 + $keyVersionLengthTotal);
 
