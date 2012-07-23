@@ -250,32 +250,32 @@ class Crypto
         
         if ($liveData !== false)
         {
-            $keyVersionDelimiterPosition = strpos($liveData, self::VERSION_DELIMITER, 32);
+            $keyVersionDelimiterPosition = strpos($liveData, self::VERSION_DELIMITER, 16);
         }
         
-        // Version delimeter position must be bigger than 32.
-        if ($keyVersionDelimiterPosition !== false && (int) $keyVersionDelimiterPosition > 32)
+        // Version delimeter position must be greater than 16.
+        if ($keyVersionDelimiterPosition !== false && (int) $keyVersionDelimiterPosition > 16)
         {
-            $keyVersionLength = $keyVersionDelimiterPosition - 32;
+            $keyVersionLength = $keyVersionDelimiterPosition - 16;
             
             // Key version plus version delimeter ("$" character).
             $keyVersionLengthTotal = $keyVersionLength + 1;
-            $keyVersion = substr($liveData, 32, $keyVersionLength);
+            $keyVersion = substr($liveData, 16, $keyVersionLength);
         }
 
         // A quick check if $liveData and $keyVersion has at least the minimum needed amount of bytes.
-        if ($liveData !== false && isset($liveData[44 + $keyVersionLengthTotal]) && isset($keyVersion[0]))
+        if ($liveData !== false && isset($liveData[28 + $keyVersionLengthTotal]) && isset($keyVersion[0]))
         {
-            $currentMac = (string) substr($liveData, 0, 32);
-            $timestamp = (int) base_convert((string) substr($liveData, 32 + $keyVersionLengthTotal, 6), 36, 10);
-            $macExpire = (int) base_convert((string) substr($liveData, 38 + $keyVersionLengthTotal, 6), 36, 10);
+            $currentMac = (string) substr($liveData, 0, 16);
+            $timestamp = (int) base_convert((string) substr($liveData, 16 + $keyVersionLengthTotal, 6), 36, 10);
+            $macExpire = (int) base_convert((string) substr($liveData, 22 + $keyVersionLengthTotal, 6), 36, 10);
             
             // Make sure the $timestamp and $macExpire are correct. Also, get random
             // bytes for a HMAC key (HMAC is applied two times, the second HMAC round
             // uses this random key).
             if (time() >= $timestamp && time() <= $macExpire && (false !== ($secondRoundMacKey = $this->getRandomBytes(128))))
             {
-                $dataString = (string) substr($liveData, 32);
+                $dataString = (string) substr($liveData, 16);
                 $macKeySeed = (string) $this->_keyManager->getKeyByVersion('authentication', $keyVersion);
                 $macKey = $this->_setupKey(array($timestamp, $macExpire, $macKeySeed));
                 unset($macKeySeed);
@@ -424,7 +424,8 @@ class Crypto
      */
     protected function _hmac($data, $key)
     {
-        return hash_hmac('sha256', $data, $key, true);
+        // Truncate the output to 128 bits.
+        return substr(hash_hmac('sha256', $data, $key, true), 0, 16);
     }
 
     /**
