@@ -102,7 +102,7 @@ Examples
 ``` php
 <?php
 require '/path/to/library/TCrypto/Loader.php';
-$loader = new Loader();
+$loader = new TCrypto\Loader();
 $loader->register();
 // Or more simply, use Composer http://getcomposer.org/download/
 // Add something like "tcrypto/tcrypto": "*" to your composer.json:

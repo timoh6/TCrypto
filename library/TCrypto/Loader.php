@@ -1,4 +1,5 @@
 <?php
+namespace TCrypto;
 
 /**
  * SplClassLoader implementation that implements the technical interoperability
