@@ -1,7 +1,7 @@
 <?php
 $error_level = E_ALL & E_STRICT;
 
-//ini_set('error_reporting', $error_level);
+ini_set('error_reporting', $error_level);
 ini_set('display_errors', 1);
 
 $tcryptoLocation = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'library' . DIRECTORY_SEPARATOR . 'TCrypto';
@@ -9,7 +9,7 @@ $tcryptoLocation = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'library' . DIRECTOR
 require $tcryptoLocation . DIRECTORY_SEPARATOR . 'Loader.php';
 require 'apps.php';
 
-$loader = new Loader();
+$loader = new TCrypto\Loader();
 $loader->register();
 
 $settings = new TCrypto\Tools\SettingStore();
