@@ -2,9 +2,9 @@
 
 namespace TCrypto;
 
-use TCrypto\KeyManager\KeyManagerInterface,
-    TCrypto\StorageHandler\StorageInterface,
-    TCrypto\CryptoHandler\CryptoInterface;
+use TCrypto\KeyManager\KeyManagerInterface;
+use TCrypto\StorageHandler\StorageInterface;
+use TCrypto\CryptoHandler\CryptoInterface;
 
 /**
  * The main workhorse.
@@ -81,12 +81,34 @@ class Crypto
      * @param TCrypto\PluginContainer $plugins
      * @param array $options
      */
-    public function __construct(KeyManagerInterface $keyManager,
-                                StorageInterface $storage,
-                                PluginContainer $plugins,
-                                CryptoInterface $crypto = null,
-                                array $options = array())
+    public function __construct(
+            KeyManagerInterface $keyManager = null,
+            StorageInterface $storage = null,
+            PluginContainer $plugins = null,
+            CryptoInterface $crypto = null,
+            array $options = array()
+            )
     {
+        if ($keyManager === null)
+        {
+            // Default KeyManager, uses a default keyfile: 
+            // /path/to/TCrypto/keystore/default.
+            $keyManager = new KeyManager\Filesystem();
+        }
+        
+        if ($storage === null)
+        {
+            // Default StorageHandler. Uses cookies with name "my_cookie" and
+            // requires an HTTPS connection.
+            $storage = new StorageHandler\Cookie();
+        }
+        
+        if ($plugins === null)
+        {
+            // Default PluginContainer. Serialize/unserialize data.
+            $plugins = new PluginContainer();
+        }
+        
         $this->_keyManager = $keyManager;
         $this->_storageHandler = $storage;
         $this->_cryptoHandler = $crypto;

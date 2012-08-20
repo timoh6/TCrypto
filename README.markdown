@@ -157,6 +157,14 @@ $options = array('max_lifetime' => 6400);
 // Create a new Crypto instance and inject the needed dependencies.
 $tc = new TCrypto\Crypto($keymanager, $storage, $plugins, $crypto, $options);
 
+// If you create a new TCrypto instance without passing any of the dependencies,
+// e.g. $tc = new TCrypto\Crypto(), TCrypto will use the following defaults:
+// $keyManager = new KeyManager\Filesystem(); // Uses the default keyfile.
+// $storage = new StorageHandler\Cookie(); // Requires HTTPS connection.
+// $plugins = new PluginContainer(); // Default serialize/unserialize plugin.
+// $crypto = null // No encryption.
+// $options = array() // No options are modified.
+
 // Value can be any serializable data type. 
 $tc->setValue('key', 'value');
 $tc->setValue('object', new stdClass());
