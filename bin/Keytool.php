@@ -14,7 +14,14 @@ $loader->register();
 
 $settings = new TCrypto\Tools\SettingStore();
 $cli = new TCrypto\Tools\Cli\Horde\Cli();
-$optionParser = new TCrypto\Tools\ArrayOptionParser('keytool.config.php');
+if (file_exists('keytool.config.php'))
+{
+    $optionParser = new TCrypto\Tools\ArrayOptionParser('keytool.config.php');
+}
+else
+{
+    $optionParser = new TCrypto\Tools\ArrayOptionParser('keytool.config.dist.php');
+}
 $helper = new TCrypto\Tools\Keytool\Filesystem();
 $keyParser = new TCrypto\Tools\Keytool\KeyParser();
 
