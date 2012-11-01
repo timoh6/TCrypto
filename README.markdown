@@ -14,6 +14,8 @@ authentication key creation (Keytool) using strong randomness. Key rotation
 TCrypto can be used as a scalable "session handler". Especially scalable,
 if cookies are used as a storage backend. This is a bit like Ruby on Rails sessions.
 
+There's an article outlining basic TCrypto usage at [websec.io](http://http://websec.io/): [TCrypto: Encrypted data storage for PHP applications](http://websec.io/2012/08/29/TCrypto-Encrypted-Data-Storage-for-PHP.html)
+
 This is a preview release.
 
 TCrypto is placed in the public domain.
