@@ -24,22 +24,22 @@ class Crypto
     protected $_macMaxLifetime = 3600;
     
     /**
-     * @var TCrypto\KeyManager\KeyManagerInterface
+     * @var \TCrypto\KeyManager\KeyManagerInterface
      */
     protected $_keyManager = null;
     
     /**
-     * @var TCrypto\StorageHandler\StorageInterface
+     * @var \TCrypto\StorageHandler\StorageInterface
      */
     protected $_storageHandler = null;
     
     /**
-     * @var TCrypto\CryptoHandler\CryptoInterface
+     * @var \TCrypto\CryptoHandler\CryptoInterface
      */
     protected $_cryptoHandler = null;
     
     /**
-     * @var TCrypto\pluginContainer
+     * @var \TCrypto\pluginContainer
      */
     protected $_pluginContainer = null;
     
@@ -75,10 +75,10 @@ class Crypto
 
     /**
      *
-     * @param TCrypto\KeyManager\KeyManagerInterface $keyManager
-     * @param TCrypto\StorageHandler\StorageInterface $storage
-     * @param TCrypto\CryptoHandler\CryptoInterface $crypto
-     * @param TCrypto\PluginContainer $plugins
+     * @param \TCrypto\KeyManager\KeyManagerInterface $keyManager
+     * @param \TCrypto\StorageHandler\StorageInterface $storage
+     * @param \TCrypto\PluginContainer $plugins
+     * @param \TCrypto\CryptoHandler\CryptoInterface $crypto
      * @param array $options
      */
     public function __construct(
@@ -149,6 +149,7 @@ class Crypto
     }
 
     /**
+     * @param string $key
      * @return boolean
      */
     public function removeValue($key)
@@ -166,7 +167,7 @@ class Crypto
     /**
      * Saves the data to a storage.
      *
-     * @throws TCrypto\Exception
+     * @throws \TCrypto\Exception
      * @return boolean
      */
     public function save()
@@ -304,8 +305,8 @@ class Crypto
                 $mac = $this->_hmac($dataString, $macKey);
                 unset($macKey);
 
-                // We "double HMAC" to randomize the bytes. This should make
-                // timing attacks infeasible.
+                // We "double HMAC" to randomize the bytes.
+                // Now we do not have to worry about timing leaks.
                 $currentMac = $this->_hmac($currentMac, $secondRoundMacKey);
                 $mac = $this->_hmac($mac, $secondRoundMacKey);
                 unset($secondRoundMacKey);
@@ -367,7 +368,7 @@ class Crypto
      *
      * @param array $fields
      * @return string
-     * @throws TCrypto\Exception
+     * @throws \TCrypto\Exception
      */
     protected function _setupKey(array $fields = array())
     {
@@ -420,6 +421,7 @@ class Crypto
      * @param string $data
      * @param int $len
      * @return string
+     * @throws \TCrypto\Exception
      */
     protected function _hash($data, $len = 32)
     {

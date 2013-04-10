@@ -22,7 +22,7 @@ class PluginContainer extends \SplObjectStorage
      * instead of the standard PHP serializer:
      * $plugins = new TCrypto\PluginContainer(new MyIgbinarySerializerPlugin());
      *
-     * @param TCrypto\Plugin\PluginInterface $firstPlugin 
+     * @param \TCrypto\Plugin\PluginInterface $firstPlugin
      */
     public function __construct(PluginInterface $firstPlugin = null)
     {
@@ -38,7 +38,7 @@ class PluginContainer extends \SplObjectStorage
     
     /**
      *
-     * @param TCrypto\Plugin\PluginInterface $plugin 
+     * @param \TCrypto\Plugin\PluginInterface $plugin
      */
     public function attachPlugin(PluginInterface $plugin)
     {

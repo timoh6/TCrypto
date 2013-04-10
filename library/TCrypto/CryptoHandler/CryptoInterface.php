@@ -13,7 +13,7 @@ interface CryptoInterface
      * 
      * @param string $data
      * @param string $iv
-     * @param strig $key
+     * @param string $key
      */
     public function encrypt($data, $iv, $key);
     
@@ -22,7 +22,7 @@ interface CryptoInterface
      * 
      * @param string $data
      * @param string $iv
-     * @param strig $key
+     * @param string $key
      */
     public function decrypt($data, $iv, $key);
     
