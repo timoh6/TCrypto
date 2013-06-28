@@ -9,7 +9,7 @@ namespace TCrypto\KeyManager;
  * 
  * @author timoh <timoh6@gmail.com>
  * @license Public Domain
- */      
+ */
 class Filesystem implements KeyManagerInterface
 {
     /**
@@ -25,7 +25,10 @@ class Filesystem implements KeyManagerInterface
      * @var array 
      */
     protected $_keyDump = null;
-    
+
+    /**
+     * @var null
+     */
     protected $_primaryKeyVersion = null;
     
     public function __construct($keyfile = null)
@@ -41,7 +44,7 @@ class Filesystem implements KeyManagerInterface
     /**
      * Set the key data as a plain PHP array.
      * 
-     * @param array $keys
+     * @param array $keysArray
      */
     public function setKeysAsArray(array $keysArray)
     {
@@ -50,7 +53,10 @@ class Filesystem implements KeyManagerInterface
 
     /**
      * Returns the requested key.
-     * 
+     *
+     * @param string $typeIndex An identifier ('authentication' or 'encryption') to specify the type of the key
+     * @param string|null $versionIndex Version index of the key. Null for primary keys
+     * @throws KeyManagerException
      * @return string 
      */
     public function getKeyByVersion($typeIndex, $versionIndex = null)
@@ -75,7 +81,10 @@ class Filesystem implements KeyManagerInterface
         
         return (string) $key;
     }
-    
+
+    /**
+     * @return string
+     */
     public function getPrimaryKeyVersion()
     {
         if ($this->_primaryKeyVersion !== null)
@@ -93,7 +102,11 @@ class Filesystem implements KeyManagerInterface
             return (string) $versionIndex;
         }
     }
-    
+
+    /**
+     * @return array
+     * @throws KeyManagerException
+     */
     protected function _fetchData()
     {
         if (!empty($this->_keyDump))

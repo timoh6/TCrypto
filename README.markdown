@@ -3,7 +3,7 @@ About
 
 [![Build Status](https://secure.travis-ci.org/timoh6/TCrypto.png)](http://travis-ci.org/timoh6/TCrypto)
 
-TCrypto is a simple and flexible PHP 5.3+ key-value storage library. By default,
+TCrypto is a simple and flexible PHP 5.3+ in-memory key-value storage library. By default,
 a cookie will be used as a storage backend.
 
 TCrypto has been designed from the ground up with security in mind. Safe algorithms
@@ -16,7 +16,10 @@ if cookies are used as a storage backend. This is a bit like Ruby on Rails sessi
 
 There's an article outlining basic TCrypto usage at [websec.io](http://websec.io/): [TCrypto: Encrypted data storage for PHP applications](http://websec.io/2012/08/29/TCrypto-Encrypted-Data-Storage-for-PHP.html)
 
-This is a preview release.
+This is a preview release (although considered stable). Keyfile encryption will be
+available in version 1.0.0. Otherwise no other changes are planned between current
+dev-master and 1.0.0.
+
 
 TCrypto is placed in the public domain.
 
@@ -135,6 +138,19 @@ $storage = new TCrypto\StorageHandler\Cookie();
 // The second parameter for Cookie specifies the name of the cookie.
 // $storage = new TCrypto\StorageHandler\Cookie(false, 'my_cookie_name');
 
+// or, to get TCrypto payload immediately back as a string:
+// $storage = new TCrypto\StorageHandler\String();
+// $tcryptoPayload = $tcrypto->save();
+// To feed back previously used TCrypto payload, pass it as a first argument to String():
+// $storage = new TCrypto\StorageHandler\String($tcryptoPayload);
+
+// In short, you can save TCrypto payload to, say, a database
+// (without the need to use a specific database StorageHandler).
+// Then you can fetch the TCrypto payload from the database, and
+// feed it back into TCrypto.
+// NOTE, using String() StorageHandler will make
+// $tcrypto->save() to output the actual payload.
+
 // Initialize encryption using either OpenSSL or Mcrypt (optional).
 $crypto = new TCrypto\CryptoHandler\OpenSslAes128Cbc();
 // or
@@ -157,7 +173,7 @@ $plugins->attachPlugin(new TCrypto\Plugin\CompressPlugin());
 $options = array('max_lifetime' => 6400);
 
 // Create a new Crypto instance and inject the needed dependencies.
-$tc = new TCrypto\Crypto($keymanager, $storage, $plugins, $crypto, $options);
+$tcrypto = new TCrypto\Crypto($keymanager, $storage, $plugins, $crypto, $options);
 
 // If you create a new TCrypto instance without passing any of the dependencies,
 // e.g. $tc = new TCrypto\Crypto(), TCrypto will use the following defaults:
@@ -168,18 +184,20 @@ $tc = new TCrypto\Crypto($keymanager, $storage, $plugins, $crypto, $options);
 // $options = array() // No options are modified.
 
 // Value can be any serializable data type. 
-$tc->setValue('key', 'value');
-$tc->setValue('object', new stdClass());
-$tc->removeValue('object');
+$tcrypto->setValue('key', 'value');
+$tcrypto->setValue('object', new stdClass());
+$tcrypto->removeValue('object');
 
-echo $tc->getValue('key'); // "value"
-echo $tc->getValue('object'); // "NULL"
+echo $tcrypto->getValue('key'); // "value"
+echo $tcrypto->getValue('object'); // "NULL"
 
 // Saves the data to a storage.
-$tc->save();
+$tcrypto->save();
+// If String() StorageHandler is being used, $tcrypto->save() will output
+// the TCrypto payload (you need to store the payload by some other means).
 
 // Destroys the data both from memory and storage.
-$tc->destroy();
+$tcrypto->destroy();
 ```
 
 
@@ -197,7 +215,7 @@ and
     Crypto\CryptoHandler\McryptAes256Cbc
 
 OpenSslAes128Cbc/McryptAes128Cbc and OpenSslAes256Cbc/McryptAes256Cbc both
-implememt AES in CBC mode using a random initializing vector. Only the key size
+implement AES in CBC mode using a random initializing vector. Only the key size
 differs between them. 128-bit key size should be unbreakable with foreseeable
 technology. But on the other hand, 256-bit keys provides more margin of security
 (against side channels etc.). Encrypting with 128-bit keys should be somewhat
@@ -208,9 +226,9 @@ If you feel paranoid (the bigger, the better fetish), use McryptAes256Cbc.
 Otherwise use McryptAes128Cbc.
 
 TCrypto derives encryption keys from variable data (timestamps, initializing
-vector, key seeds and user supplied extra entropy sources). This quarantees
+vector, key seeds and user supplied extra entropy sources). This guarantees
 that a fresh and random key will be used for each encryption operation. The key
-setup compined with (truncated) SHA512 hashing ensures (currently known) related-key
+setup combined with (truncated) SHA512 hashing ensures (currently known) related-key
 attacks does not apply against AES-256 (McryptAes256Cbc).
 
 If your system supports OpenSSL, use OpenSSL based encryption (OpenSslAes128Cbc

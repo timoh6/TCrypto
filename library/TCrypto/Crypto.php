@@ -168,7 +168,7 @@ class Crypto
      * Saves the data to a storage.
      *
      * @throws \TCrypto\Exception
-     * @return boolean
+     * @return boolean|string Returns TCrypto payload as a string if "String()" StorageHandler is used, otherwise boolean
      */
     public function save()
     {
@@ -276,12 +276,12 @@ class Crypto
             $keyVersionDelimiterPosition = strpos($liveData, self::VERSION_DELIMITER, 16);
         }
         
-        // Version delimeter position must be greater than 16.
+        // Version delimiter position must be greater than 16.
         if ($keyVersionDelimiterPosition !== false && (int) $keyVersionDelimiterPosition > 16)
         {
             $keyVersionLength = $keyVersionDelimiterPosition - 16;
             
-            // Key version plus version delimeter ("$" character).
+            // Key version plus version delimiter ("$" character).
             $keyVersionLengthTotal = $keyVersionLength + 1;
             $keyVersion = substr($liveData, 16, $keyVersionLength);
         }

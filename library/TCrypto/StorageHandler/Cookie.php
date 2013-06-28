@@ -71,8 +71,9 @@ class Cookie implements StorageInterface
 
     /**
      * URL safe Base64 encoding (suitable for a cookie).
-     * 
-     * @return string|false
+     *
+     * @param string $value
+     * @return string
      */
     public static function encodeBase64UrlSafe($value)
     {
@@ -80,8 +81,9 @@ class Cookie implements StorageInterface
     }
 
     /**
-     * URL safe Base64 deconding (suitable for a cookie).
-     * 
+     * URL safe Base64 decoding (suitable for a cookie).
+     *
+     * @param string $value
      * @return string|false
      */
     public static function decodeBase64UrlSafe($value)
