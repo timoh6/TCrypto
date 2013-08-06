@@ -24,4 +24,9 @@ class DefaultPlugin implements PluginInterface
     {
         return unserialize($data);
     }
+
+    public function isEncryptionCompatible()
+    {
+        return true;
+    }
 }

@@ -35,8 +35,10 @@ class TCrypto_CryptoTest extends PHPUnit_Framework_TestCase
         $storage = new TCrypto\StorageHandler\ArrayStorage();
         
         $plugins = $this->getMock('TCrypto\\PluginContainer');
-        $plugins->expects($this->once())->method('saveDispatcher')->will($this->returnCallback('serialize'));
-        $plugins->expects($this->once())->method('extractDispatcher')->will($this->returnCallback('unserialize'));
+        //$plugins->expects($this->once())->method('saveDispatcher')->will($this->returnCallback('serialize'));
+        $plugins->expects($this->once())->method('saveDispatcher')->will($this->returnCallback(function ($v, $c) { return serialize($v); }));
+        //$plugins->expects($this->once())->method('extractDispatcher')->will($this->returnCallback('unserialize'));
+        $plugins->expects($this->once())->method('extractDispatcher')->will($this->returnCallback(function ($v, $c) { return unserialize($v); }));
         
         $tc = new TCrypto\Crypto($keymanager, $storage, $plugins);  
         $tc->setValue('key1', $value1);

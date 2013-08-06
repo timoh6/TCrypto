@@ -22,4 +22,9 @@ class CompressPlugin implements PluginInterface
     {
         return gzinflate($data);
     }
+
+    public function isEncryptionCompatible()
+    {
+        return false;
+    }
 }

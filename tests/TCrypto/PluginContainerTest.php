@@ -14,8 +14,8 @@ class TCrypto_PluginContainerTest extends PHPUnit_Framework_TestCase
        $pc = new TCrypto\PluginContainer();
        $pc->attachPlugin(new TCrypto\Plugin\CompressPlugin());
        
-       $dataAfterSaveDispatcher = $pc->saveDispatcher($originalData);
-       $dataAfterExtractDispatcher = $pc->extractDispatcher($dataAfterSaveDispatcher);
+       $dataAfterSaveDispatcher = $pc->saveDispatcher($originalData, false);
+       $dataAfterExtractDispatcher = $pc->extractDispatcher($dataAfterSaveDispatcher, false);
        
        $this->assertSame($originalData, $dataAfterExtractDispatcher);
    }

@@ -102,7 +102,7 @@ class Crypto
             // requires an HTTPS connection.
             $storage = new StorageHandler\Cookie();
         }
-        
+
         if ($plugins === null)
         {
             // Default PluginContainer. Serialize/unserialize data.
@@ -172,12 +172,14 @@ class Crypto
      */
     public function save()
     {
-        if (count($this->_data) > 0 && (false !== ($data = $this->_pluginContainer->saveDispatcher($this->_data))))
+        $isUsingCrypto = $this->_cryptoHandler !== null ? true : false;
+
+        if (count($this->_data) > 0 && (false !== ($data = $this->_pluginContainer->saveDispatcher($this->_data, $isUsingCrypto))))
         {
             $timestamp = time();
             $macExpire = $timestamp + (int) $this->_macMaxLifetime;
 
-            if ($this->_cryptoHandler !== null)
+            if ($isUsingCrypto === true)
             {
                 $ivLen = $this->_cryptoHandler->getIvLen();
                 $keyLen = $this->_cryptoHandler->getKeyLen();
@@ -263,6 +265,7 @@ class Crypto
      */
     protected function _extractData()
     {
+        $isUsingCrypto = $this->_cryptoHandler !== null ? true : false;
         $liveData = $this->_storageHandler->fetch();
         $data = '';
         $keyVersionDelimiterPosition = false;
@@ -315,7 +318,7 @@ class Crypto
                 {
                     $data = substr($dataString, 12 + $keyVersionLengthTotal);
 
-                    if ($this->_cryptoHandler !== null)
+                    if ($isUsingCrypto === true)
                     {
                         $ivLen = $this->_cryptoHandler->getIvLen();
                         $keyLen = $this->_cryptoHandler->getKeyLen();
@@ -343,7 +346,7 @@ class Crypto
 
                     if ($data !== false)
                     {
-                        $data = $this->_pluginContainer->extractDispatcher($data);
+                        $data = $this->_pluginContainer->extractDispatcher($data, $isUsingCrypto);
 
                         if ($data !== false && is_array($data))
                         {

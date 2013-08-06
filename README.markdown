@@ -20,6 +20,13 @@ This is a preview release (although considered stable). Keyfile encryption will 
 available in version 1.0.0. Otherwise no other changes are planned between current
 dev-master and 1.0.0.
 
+**Important security note about data compression:**
+
+Prior to August 6 2013, TCrypto allowed to use data compression when the data was
+also being encrypted. This may lead to disclosure of the (confidential) plain text.
+Every TCrypto users are encouraged to update to the current dev-master. Especially
+if CompressPlugin() was used with data encryption.
+
 
 TCrypto is placed in the public domain.
 
@@ -245,6 +252,15 @@ places.
 
 * After extracting the data from a storage (plugins are run in reverse order).
 
+It is important to note that you can not use data compression plugins if you
+are using data encryption.
+
+If you configure TCrypto to use data compression at the same time data is
+being encrypted, the PluginContainer will automatically skip data compression plugins.
+
+This is important because compressing confidential (encrypted) data may leak information
+about the plain text.
+
 This creates the required serialize/unserialize plugin:
 
 ``` php
@@ -258,6 +274,8 @@ You can also attach more plugins:
 
 ``` php
 <?php
+// NOTE: CompressPlugin will not be run if data encryption is being used.
+// This is because data compression leaks information about the plain text.
 $plugins->attachPlugin(new TCrypto\Plugin\CompressPlugin());
 ```
 
