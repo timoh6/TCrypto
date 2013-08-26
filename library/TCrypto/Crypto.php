@@ -516,6 +516,10 @@ class Crypto
             }
         }
 
+        /*
+         * We want to play it safe and disable openssl_random_pseudo_bytes() for now.
+         * This is due to the OpenSSL "PID wrapping bug", which potentially could affect TCrypto.
+         * 
         if ($hasBytes === false && version_compare(PHP_VERSION, '5.3.4') >= 0 && function_exists('openssl_random_pseudo_bytes'))
         {
             $tmp = openssl_random_pseudo_bytes($count, $cryptoStrong);
@@ -525,6 +529,7 @@ class Crypto
                 $hasBytes = true;
             }
         }
+        */
 
         // Make sure PHP version is at least 5.3. We do this because
         // mcrypt_create_iv() on older versions of PHP
