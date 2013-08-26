@@ -24,7 +24,7 @@ dev-master and 1.0.0.
 
 Prior to August 6 2013, TCrypto allowed to use data compression when the data was
 also being encrypted. This may lead to disclosure of the (confidential) plain text.
-Every TCrypto users are encouraged to update to the current dev-master. Especially
+All TCrypto users are encouraged to update to the current dev-master. Especially
 if CompressPlugin() was used with data encryption.
 
 
