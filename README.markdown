@@ -39,6 +39,14 @@ OpenSSL extension must be available. If OpenSSL is used for encryption,
 PHP 5.3.3 or greater is required. Optional compression plugin requires zlib.
 
 
+Installation note
+-----------------
+
+TCrypto supports installation using Composer, but currently this is not
+recommended. Composer is vulnerable to MITM attacks and at the time being,
+TCrypto should be obtained via secure connection using GitHub.
+
+
 TCrypto Keymanager and Keytool
 ------------------------------
 
@@ -116,15 +124,6 @@ Examples
 require '/path/to/library/TCrypto/Loader.php';
 $loader = new TCrypto\Loader();
 $loader->register();
-// Or more simply, use Composer http://getcomposer.org/download/
-// Add something like "tcrypto/tcrypto": "@dev" to your composer.json:
-```
-``` json
-{
-    "require": {
-        "tcrypto/tcrypto": "@dev"
-    }
-}
 ```
 ``` php
 <?php
