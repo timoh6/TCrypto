@@ -68,22 +68,6 @@ class TCrypto_CryptoTest extends PHPUnit_Framework_TestCase
     }
     
     /**
-     * @expectedException PHPUnit_Framework_Error
-     */
-    public function testConstructFailsWithoutArguments()
-    {
-        new TCrypto\Crypto();
-    }
-    
-    /**
-     * @expectedException PHPUnit_Framework_Error
-     */
-    public function testConstructFailsWithInvalidArguments()
-    {
-        new TCrypto\Crypto(null, null, null, null);
-    }
-    
-    /**
      * @expectedException TCrypto\Exception
      */
     public function testCannotHashKeysLongerThan32Bytes()
