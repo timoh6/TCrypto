@@ -5,6 +5,7 @@ namespace TCrypto;
 use TCrypto\KeyManager\KeyManagerInterface;
 use TCrypto\StorageHandler\StorageInterface;
 use TCrypto\CryptoHandler\CryptoInterface;
+use TCrypto\Tools\StringUtil;
 
 /**
  * The main workhorse.
@@ -248,6 +249,8 @@ class Crypto
         }
 
         $this->destroy();
+
+        return false;
     }
 
     /**
@@ -276,7 +279,7 @@ class Crypto
         
         if ($liveData !== false)
         {
-            $keyVersionDelimiterPosition = strpos($liveData, self::VERSION_DELIMITER, 16);
+            $keyVersionDelimiterPosition = StringUtil::byteStrpos($liveData, self::VERSION_DELIMITER, 16);
         }
         
         // Version delimiter position must be greater than 16.
@@ -286,22 +289,25 @@ class Crypto
             
             // Key version plus version delimiter ("$" character).
             $keyVersionLengthTotal = $keyVersionLength + 1;
-            $keyVersion = substr($liveData, 16, $keyVersionLength);
+            if (StringUtil::byteStrlen($keyVersionLength) > 0)
+            {
+                $keyVersion = StringUtil::byteSubstr($liveData, 16, $keyVersionLength);
+            }
         }
 
         // A quick check if $liveData and $keyVersion has at least the minimum needed amount of bytes.
         if ($liveData !== false && isset($liveData[28 + $keyVersionLengthTotal]) && isset($keyVersion[0]))
         {
-            $currentMac = (string) substr($liveData, 0, 16);
-            $timestamp = (int) base_convert((string) substr($liveData, 16 + $keyVersionLengthTotal, 6), 36, 10);
-            $macExpire = (int) base_convert((string) substr($liveData, 22 + $keyVersionLengthTotal, 6), 36, 10);
+            $currentMac = (string) StringUtil::byteSubstr($liveData, 0, 16);
+            $timestamp = (int) base_convert((string) StringUtil::byteSubstr($liveData, 16 + $keyVersionLengthTotal, 6), 36, 10);
+            $macExpire = (int) base_convert((string) StringUtil::byteSubstr($liveData, 22 + $keyVersionLengthTotal, 6), 36, 10);
             
             // Make sure the $timestamp and $macExpire are correct. Also, get random
             // bytes for a HMAC key (HMAC is applied two times, the second HMAC round
             // uses this random key).
-            if (time() >= $timestamp && time() <= $macExpire && (false !== ($secondRoundMacKey = $this->getRandomBytes(128))))
+            if (time() >= $timestamp && time() <= $macExpire && (false !== ($secondRoundMacKey = $this->getRandomBytes(16))))
             {
-                $dataString = (string) substr($liveData, 16);
+                $dataString = (string) StringUtil::byteSubstr($liveData, 16, StringUtil::byteStrlen($liveData));
                 $macKeySeed = (string) $this->_keyManager->getKeyByVersion('authentication', $keyVersion);
                 $macKey = $this->_setupKey(array($timestamp, $macExpire, $macKeySeed));
                 unset($macKeySeed);
@@ -316,7 +322,7 @@ class Crypto
                 
                 if ($currentMac === $mac)
                 {
-                    $data = substr($dataString, 12 + $keyVersionLengthTotal);
+                    $data = StringUtil::byteSubstr($dataString, 12 + $keyVersionLengthTotal, StringUtil::byteStrlen($dataString));
 
                     if ($isUsingCrypto === true)
                     {
@@ -326,7 +332,7 @@ class Crypto
                         // A quick check if $data has at least the minimum needed amount of bytes.
                         if (isset($data[$ivLen]))
                         {
-                            $iv = (string) substr($data, 0, $ivLen);
+                            $iv = (string) StringUtil::byteSubstr($data, 0, $ivLen);
 
                             try
                             {
@@ -334,7 +340,7 @@ class Crypto
                                 $cryptoKey = $this->_setupKey(array($timestamp, $macExpire, $iv, $cryptoKeySeed));
                                 unset($cryptoKeySeed);
                                 $cryptoKey = $this->_hash($cryptoKey, $keyLen);
-                                $data = $this->_cryptoHandler->decrypt(substr($data, $ivLen), $iv, $cryptoKey);
+                                $data = $this->_cryptoHandler->decrypt(StringUtil::byteSubstr($data, $ivLen, StringUtil::byteStrlen($data)), $iv, $cryptoKey);
                                 unset($cryptoKey);
                             }
                             catch (Exception $e)
@@ -364,6 +370,8 @@ class Crypto
         }
 
         $this->destroy();
+
+        return;
     }
 
     /**
@@ -440,7 +448,7 @@ class Crypto
         // Truncate the data. This is to prevent leaking information about the key.
         // Even though "length extension" is probably not a problem here,
         // we do not want to take changes.
-        return substr($data, 0, $len);
+        return StringUtil::byteSubstr($data, 0, $len);
     }
 
     /**
@@ -452,7 +460,7 @@ class Crypto
     protected function _hmac($data, $key)
     {
         // Truncate the output to 128 bits.
-        return substr(hash_hmac('sha256', $data, $key, true), 0, 16);
+        return StringUtil::byteSubstr(hash_hmac('sha256', $data, $key, true), 0, 16);
     }
 
     /**
@@ -467,18 +475,18 @@ class Crypto
         $stringA = (string) $stringA;
         $stringB = (string) $stringB;
 
-        if (strlen($stringA) === 0)
+        if (StringUtil::byteStrlen($stringA) === 0)
         {
             return false;
         }
 
-        if (strlen($stringA) !== strlen($stringB))
+        if (StringUtil::byteStrlen($stringA) !== StringUtil::byteStrlen($stringB))
         {
             return false;
         }
 
         $result = 0;
-        $len = strlen($stringA);
+        $len = StringUtil::byteStrlen($stringA);
 
         for ($i = 0; $i < $len; $i++)
         {
@@ -544,7 +552,7 @@ class Crypto
             }
         }
 
-        if (strlen($bytes) === $count)
+        if (StringUtil::byteStrlen($bytes) === $count)
         {
             return $bytes;
         }

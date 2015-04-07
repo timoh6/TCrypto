@@ -87,4 +87,29 @@ class TCrypto_CryptoTest extends PHPUnit_Framework_TestCase
             $this->markTestSkipped('Need PHP 5.3.2+ to test private methods.');
         }
     }
+
+    public function testPayloadExpires()
+    {
+        $value1 = 'Press any key to continue.';
+
+        $keymanager = $this->getMock('TCrypto\\KeyManager\\Filesystem');
+        $keymanager->expects($this->any())->method('getKeyByVersion')->will($this->returnValue('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'));
+        $keymanager->expects($this->any())->method('getPrimaryKeyVersion')->will($this->returnValue('xxx'));
+
+        $storage = new TCrypto\StorageHandler\ArrayStorage();
+
+        $plugins = $this->getMock('TCrypto\\PluginContainer');
+        $plugins->expects($this->once())->method('saveDispatcher')->will($this->returnCallback(function ($v, $c) { return serialize($v); }));
+        $plugins->expects($this->never())->method('extractDispatcher');
+        $options = array('max_lifetime' => 1);
+
+        $tc = new TCrypto\Crypto($keymanager, $storage, $plugins, null, $options);
+        $tc->setValue('key1', $value1);
+        $tc->save();
+        unset($tc);
+        sleep(2);
+
+        $tc2 = new TCrypto\Crypto($keymanager, $storage, $plugins);
+        $this->assertEquals($tc2->getValue('key1'), null);
+    }
 }
