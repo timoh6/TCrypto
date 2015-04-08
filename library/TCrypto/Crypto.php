@@ -508,7 +508,20 @@ class Crypto
         $bytes = '';
         $hasBytes = false;
 
-        if (file_exists('/dev/urandom') && is_readable('/dev/urandom') && (false !== ($fh = fopen('/dev/urandom', 'rb'))))
+        // Make sure PHP version is at least 5.3. We do this because
+        // mcrypt_create_iv() on older versions of PHP
+        // does not give "strong" random data on Windows systems.
+        if (version_compare(PHP_VERSION, '5.3.0') >= 0 && function_exists('mcrypt_create_iv'))
+        {
+            $tmp = mcrypt_create_iv($count, MCRYPT_DEV_URANDOM);
+            if ($tmp !== false)
+            {
+                $bytes = $tmp;
+                $hasBytes = true;
+            }
+        }
+
+        if ($hasBytes === false && file_exists('/dev/urandom') && is_readable('/dev/urandom') && (false !== ($fh = fopen('/dev/urandom', 'rb'))))
         {
             if (function_exists('stream_set_read_buffer'))
             {
@@ -520,7 +533,6 @@ class Crypto
             if ($tmp !== false)
             {
                 $bytes = $tmp;
-                $hasBytes = true;
             }
         }
 
@@ -538,19 +550,6 @@ class Crypto
             }
         }
         */
-
-        // Make sure PHP version is at least 5.3. We do this because
-        // mcrypt_create_iv() on older versions of PHP
-        // does not give "strong" random data on Windows systems.
-        if ($hasBytes === false && version_compare(PHP_VERSION, '5.3.0') >= 0)
-        {
-            $tmp = mcrypt_create_iv($count, MCRYPT_DEV_URANDOM);
-            if ($tmp !== false)
-            {
-                $bytes = $tmp;
-                $hasBytes = true;
-            }
-        }
 
         if (StringUtil::byteStrlen($bytes) === $count)
         {
