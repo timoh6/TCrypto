@@ -19,12 +19,4 @@ class TCrypto_PluginContainerTest extends PHPUnit_Framework_TestCase
        
        $this->assertSame($originalData, $dataAfterExtractDispatcher);
    }
-   
-   /**
-     * @expectedException PHPUnit_Framework_Error
-     */
-   public function testCanNotConstructWithInvalidPlugin()
-   {
-       new TCrypto\PluginContainer(new stdClass()); 
-   }
 }
