@@ -2,7 +2,7 @@
 namespace TCrypto\StorageHandler;
 
 /**
- * String returns the TCrypto data as a plain string. The data will not be stored.
+ * PlainString returns the TCrypto data as a plain string. The data will not be stored.
  *
  * Possible use case: Use TCrypto to sign and encrypt data and pass the data back to your application.
  * For example, you can encrypt user-specific third-party tokens before saving them into a database
@@ -11,7 +11,7 @@ namespace TCrypto\StorageHandler;
  * @author timoh <timoh6@gmail.com>
  * @license Public Domain
  */
-class String implements StorageInterface
+class PlainString implements StorageInterface
 {
     /**
      * @var string

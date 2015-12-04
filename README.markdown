@@ -47,6 +47,12 @@ recommended. Composer is vulnerable to MITM attacks and at the time being,
 TCrypto should be obtained only via secure connection using GitHub.
 
 
+Backward incompatible changes
+-----------------------------
+
+04 Dec 2015 String() StorageHandler was renamed to PlainString().
+
+
 TCrypto Keymanager and Keytool
 ------------------------------
 
@@ -145,16 +151,16 @@ $storage = new TCrypto\StorageHandler\Cookie();
 // $storage = new TCrypto\StorageHandler\Cookie(false, 'my_cookie_name');
 
 // or, to get TCrypto payload immediately back as a string:
-// $storage = new TCrypto\StorageHandler\String();
+// $storage = new TCrypto\StorageHandler\PlainString();
 // $tcryptoPayload = $tcrypto->save();
-// To feed back previously used TCrypto payload, pass it as a first argument to String():
-// $storage = new TCrypto\StorageHandler\String($tcryptoPayload);
+// To feed back previously used TCrypto payload, pass it as a first argument to PlainString():
+// $storage = new TCrypto\StorageHandler\PlainString($tcryptoPayload);
 
 // In short, you can save TCrypto payload to, say, a database
 // (without the need to use a specific database StorageHandler).
 // Then you can fetch the TCrypto payload from the database, and
 // feed it back into TCrypto.
-// NOTE, using String() StorageHandler will make
+// NOTE, using PlainString() StorageHandler will make
 // $tcrypto->save() to output the actual payload.
 
 // Initialize encryption using either OpenSSL or Mcrypt (optional).
@@ -199,7 +205,7 @@ echo $tcrypto->getValue('object'); // "NULL"
 
 // Saves the data to a storage.
 $tcrypto->save();
-// If String() StorageHandler is being used, $tcrypto->save() will output
+// If PlainString() StorageHandler is being used, $tcrypto->save() will output
 // the TCrypto payload (you need to store the payload by some other means).
 
 // Destroys the data both from memory and storage.
