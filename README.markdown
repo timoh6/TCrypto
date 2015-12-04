@@ -104,7 +104,7 @@ array (
 ```
 
 'index_xxx' means a unique array index. Keytool will (by default) use 3 bytes of
-entropy in a key name (hexadecimal format). 3 bytes can produce about 8 million
+entropy in a key name (hexadecimal format). 3 bytes can produce about 4096 
 distinct keys without collisions. Given that you should probably have no more
 than a few keys in your keyfile, 3 bytes of entropy in a key name will be
 easily enough.
