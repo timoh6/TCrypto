@@ -42,9 +42,10 @@ PHP 5.3.3 or greater is required. Optional compression plugin requires zlib.
 Installation note
 -----------------
 
-TCrypto supports installation using Composer, but currently this is not
-recommended. Composer is vulnerable to MITM attacks and at the time being,
-TCrypto should be obtained only via secure connection using GitHub.
+TCrypto supports installation using Composer, but make sure you use at least Composer version 1.0.0-beta1
+to install TCrypto (Composer was vulnerable to MITM attacks before 1.0.0-beta1):
+
+[tcrypto/tcrypto](https://packagist.org/packages/tcrypto/tcrypto)
 
 
 Backward incompatible changes
